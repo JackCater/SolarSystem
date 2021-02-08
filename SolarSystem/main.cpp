@@ -20,6 +20,9 @@ int main(int argc, char* argv[]) {
     }
     else outfilename = argv[1];
 
-    fn_runge_kutta4_full(earth, sun, collection, outfilename);
+    universe u;
+    u.add(std::make_shared<body>(sun)); u.add(std::make_shared<body>(earth));
+    fn_explicit_euler_full(earth, sun, collection, outfilename);
+    //u.calculate_force(earth, sun, collection);
 	return 0;
 }

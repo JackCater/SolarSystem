@@ -20,8 +20,8 @@ const double solar_radius = 695508; // Solar radius in km
 const double earth_mass = 5.9724E24; // Earth mass in kg
 const double earth_radius = 6371; // Earth radius in km
 const double grav_constant = 6.67430E-11; // Gravitational constant in N (m/kg)^2
-const double orbital_period = 365.25 * 24 * 3600; // Orbital period in s
-const double aphelion_distance = 152.10E9; // Aphelion distance in m
+const double orbital_period = 365.25 * 24 * 3600; // Orbital period of Earth in s
+const double aphelion_distance = 152.10E9; // Aphelion distance of Earth in m
 
 // Utility Functions
 inline double degrees_to_radians(double degrees) { return degrees * pi / 180.0; } // Converts degree to radians

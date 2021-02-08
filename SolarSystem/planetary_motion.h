@@ -4,18 +4,8 @@
 #include "universe.h"
 #include "output.h"
 
-struct data {
-    double dxdt;
-    double dydt;
-    double dudt;
-    double dvdt;
-    double E;
-};
-
 std::ofstream file;
-const double constant = (grav_constant * solar_mass * orbital_period * orbital_period) / (aphelion_distance * aphelion_distance * aphelion_distance); // GMT^2/R^3 used with equations of motion
 
-inline data RHS(body& earth, body& sun); // function definition
 inline data RHS(body& earth, body& sun, double x, double y, double vx, double vy); // function definition
 inline bool fn_explicit_euler(body& earth, body& sun, data_collection& collection); // function definition
 inline bool fn_explicit_euler_full(body& earth, body& sun, data_collection& collection, char* file_name); // function definition
@@ -26,28 +16,19 @@ inline double dy(double x, double y, double vx, double vy) { return vy; }
 inline double du(double x, double y, double vx, double vy) { return -(constant * x) / pow(sqrt((x * x) + (y * y)),3); }
 inline double dv(double x, double y, double vx, double vy) { return -(constant * y) / pow(sqrt((x * x) + (y * y)),3); }
 
-inline data RHS(body& earth, body& sun) {
-    double r = distance(earth.pos(), sun.pos());
-    data d{
-        d.dxdt = earth.vx(),
-        d.dydt = earth.vy(),
-        d.dudt = -(constant * earth.x()) / (r * r * r),
-        d.dvdt = -(constant * earth.y()) / (r * r * r),
-        d.E = 0.5 * (earth.vx() * earth.vx() + earth.vy() * earth.vy()) - (constant / r) };
-    return d;
-}
+
 /*
 inline data RHS(body& earth, body& sun, double x, double y, double vx, double vy) {
     double r;
 }*/
 
 inline bool fn_explicit_euler(body& earth, body& sun, data_collection& c) {
-    data d = RHS(earth, sun);
+    data d = force::calculate_force(earth, sun);
 
-    earth.x(earth.x() + d.dxdt * c.dt());
-    earth.y(earth.y() + d.dydt * c.dt());
-    earth.vx(earth.vx() + d.dudt * c.dt());
-    earth.vy(earth.vy() + d.dvdt * c.dt());
+    earth.x(earth.x() + d.dx * c.dt());
+    earth.y(earth.y() + d.dy * c.dt());
+    earth.vx(earth.vx() + d.dvx * c.dt());
+    earth.vy(earth.vy() + d.dvy * c.dt());
     c.time(c.time() + c.dt());
 
     return true;
@@ -57,12 +38,12 @@ inline bool fn_explicit_euler_full(body& earth, body& sun, data_collection& c, c
     file.open(file_name);
 
     while (c.time() <= c.final_time()) {
-        data d = RHS(earth, sun);
+        data d = force::calculate_force(earth, sun);
 
-        earth.x(earth.x() + d.dxdt * c.dt());
-        earth.y(earth.y() + d.dydt * c.dt());
-        earth.vx(earth.vx() + d.dudt * c.dt());
-        earth.vy(earth.vy() + d.dvdt * c.dt());
+        earth.x(earth.x() + d.dx * c.dt());
+        earth.y(earth.y() + d.dy * c.dt());
+        earth.vx(earth.vx() + d.dvx * c.dt());
+        earth.vy(earth.vy() + d.dvy * c.dt());
         c.time(c.time() + c.dt());
         output(c.time(), earth, d.E, file);   // write to file 
     }

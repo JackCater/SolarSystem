@@ -6,6 +6,8 @@
 
 #include "body.h"
 #include "utility.h"
+#include "planetary_motion.h"
+#include "force.h"
 
 /// <summary>
 /// A class to add stars or planets to the universe
@@ -13,14 +15,19 @@
 /// </summary>
 class universe : public body {
 private:
-	std::vector<std::shared_ptr<body>> objects;
+	std::vector<std::shared_ptr<body>> objects; // List of objects in the universe
 
 public:
-	universe() {}
-	universe(std::shared_ptr<body> object) { add(object); }
+	universe() {} // Default constructor
+	universe(std::shared_ptr<body> object) { add(object); } // Modified constructor
 
 	void clear() { objects.clear(); } // Removes all planets/stars from the universe
 	void add(std::shared_ptr<body> object) { objects.push_back(object); } // Adds planet/star to the universe
+
+	void total_force() {
+		for (const auto& object : objects) {
+		}
+	}
 };
 
 /// <summary>

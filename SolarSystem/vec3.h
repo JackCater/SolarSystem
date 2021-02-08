@@ -68,6 +68,8 @@ inline vec3 cross(const vec3& u, const vec3& v) { // Vector cross product
 
 inline vec3 unit_vector(vec3 v) { return v / v.length(); } // Unit vector
 
+inline vec3 unit_vector_two(vec3 v, vec3 u) { return (v - u) / abs(v.length() - u.length()); }
+
 inline 	double distance(const point3& u, const point3& v) {
 	return sqrt(
 		((u.x() - v.x()) * (u.x() - v.x())) +

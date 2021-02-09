@@ -77,4 +77,10 @@ inline 	double distance(const point3& u, const point3& v) {
 		((u.z() - v.z()) * (u.z() - v.z())));
 }
 
+inline vec3 distance_vector(const point3& u, const point3& v) {
+	return vec3(u.x() - v.x(),
+		u.y() - v.y(),
+		u.z() - v.z());
+}
+
 #endif

@@ -3,7 +3,7 @@
 #define BODY_H
 
 #include "vec3.h"
-#include "universe.h"
+#include "utility.h"
 
 class body {
 private:
@@ -13,8 +13,50 @@ private:
 	vel3 _velocity; // Velocity of star/planet (vx, vy, vz)
 
 public:
-	body() : _centre(point3(0, 0, 0)), _radius(0), _mass(0), _velocity(vel3(0,0,0)) {} // Default contructor
+	body() : _centre(point3(0, 0, 0)), _radius(0), _mass(0), _velocity(vel3(0, 0, 0)) {} // Default contructor
 	body(point3 centre, const double r, const double m, vel3 vel) : _centre(centre), _radius(r), _mass(m), _velocity(vel) {} // Modified constructor
+
+	void compute_acceleration(point3 pos, double& ax, double& ay) {
+		ax = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2)) * -pos.x() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2));
+		ay = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2)) * -pos.y() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2));
+		return;
+	}	
+
+	void step_euler(double dt, body* acting_force) {
+		double ax, ay;
+		acting_force->compute_acceleration(this->pos(), ax, ay);
+		this->x(this->vx() * dt);
+		this->y(this->vy() * dt);
+		this->vx(ax * dt);
+		this->vy(ay * dt);
+		return;
+	}
+	
+	void step_runge_kutta(double dt, body* acting_force) {
+		// Declare Runge-Kutta variables
+		double k1vx, k1vy, k2vx, k2vy, k3vx, k3vy, k4vx, k4vy;
+
+		// Calculates Runge-Kutta variables 
+		double k1x = this->vx(), k1y = this->vy();
+		acting_force->compute_acceleration(this->pos(), k1vx, k1vy);
+
+		double k2x = this->vx() + (k1vx * (dt / 2.0)), k2y = this->vy() + (k1vy * (dt / 2.0));
+		acting_force->compute_acceleration(this->pos() + point3(k1x * (dt / 2.0), k1y * (dt / 2.0), 0.0), k2vx, k2vy);
+
+		double k3x = this->vx() + k2vx * (dt / 2.0), k3y = this->vy() + k2vy * (dt / 2.0);
+		acting_force->compute_acceleration(this->pos() + point3(k2x * (dt / 2.0), k2y * (dt / 2.0), 0.0), k3vx, k3vy);
+
+		double k4x = this->vx() + k3vx * dt, k4y = this->vy() + k3vy * dt;
+		acting_force->compute_acceleration(this->pos() + point3(k3x * dt, k3y * dt, 0.0), k4vx, k4vy);
+
+		// Updates position and velocity
+		this->x(this->x() + (dt / 6.0) * (k1x + (2.0 * k2x) + (2.0 * k3x) + k4x));
+		this->y(this->y() + (dt / 6.0) * (k1y + (2.0 * k2y) + (2.0 * k3y) + k4y));
+		this->vx(this->vx() + (dt / 6.0) * (k1vx + (2.0 * k2vx) + (2.0 * k3vx) + k4vx));
+		this->vy(this->vy() + (dt / 6.0) * (k1vy + (2.0 * k2vy) + (2.0 * k3vy) + k4vy));
+
+		return;
+	}
 
 	// Getters
 	double	x()		const { return _centre.x();		} // Get X pos

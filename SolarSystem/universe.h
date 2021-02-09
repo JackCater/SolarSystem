@@ -5,9 +5,6 @@
 #include <memory>
 
 #include "body.h"
-#include "utility.h"
-#include "planetary_motion.h"
-#include "force.h"
 
 /// <summary>
 /// A class to add stars or planets to the universe
@@ -26,6 +23,8 @@ public:
 
 	void total_force() {
 		for (const auto& object : objects) {
+			double ax, ay;
+			object->compute_acceleration(point3(1000000000.0, 500000000.0, 0), ax, ay);
 		}
 	}
 };

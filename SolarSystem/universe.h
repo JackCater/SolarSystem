@@ -12,19 +12,22 @@
 /// </summary>
 class universe : public body {
 private:
-	std::vector<std::shared_ptr<body>> objects; // List of objects in the universe
+	std::vector<body*> objects; // List of objects in the universe
 
 public:
 	universe() {} // Default constructor
-	universe(std::shared_ptr<body> object) { add(object); } // Modified constructor
+	universe(body* object) { add(object); } // Modified constructor
 
 	void clear() { objects.clear(); } // Removes all planets/stars from the universe
-	void add(std::shared_ptr<body> object) { objects.push_back(object); } // Adds planet/star to the universe
+	void add(body* object) { objects.push_back(object); } // Adds planet/star to the universe
+
+	unsigned __int64 length() const { return objects.size(); }
+	body* body_at(int i) const { return objects.at(i); }
 
 	void total_force() {
 		for (const auto& object : objects) {
-			double ax, ay;
-			object->compute_acceleration(point3(1000000000.0, 500000000.0, 0), ax, ay);
+			double ax, ay, az;
+			object->compute_acceleration(point3(1000000000.0, 500000000.0, 0), ax, ay, az);
 		}
 	}
 };

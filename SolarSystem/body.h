@@ -13,47 +13,63 @@ private:
 	vel3 _velocity; // Velocity of star/planet (vx, vy, vz)
 
 public:
-	body() : _centre(point3(0, 0, 0)), _radius(0), _mass(0), _velocity(vel3(0, 0, 0)) {} // Default contructor
+	/// <summary>
+	/// Default constructor
+	/// </summary>
+	body() : _centre(point3(0, 0, 0)), _radius(0), _mass(0), _velocity(vel3(0, 0, 0)) {}
+
+	/// <summary>
+	/// Modified constructor
+	/// </summary>
+	/// <param name="centre">Position of body in 3D space</param>
+	/// <param name="r">Radius of body</param>
+	/// <param name="m">Mass of body</param>
+	/// <param name="vel">Velocity of body in 3D vector form</param>
 	body(point3 centre, const double r, const double m, vel3 vel) : _centre(centre), _radius(r), _mass(m), _velocity(vel) {} // Modified constructor
 
-	void compute_acceleration(point3 pos, double& ax, double& ay) {
-		ax = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2)) * -pos.x() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2));
-		ay = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2)) * -pos.y() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2));
+	void compute_acceleration(point3 pos, double& ax, double& ay, double& az) {
+		ax = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * -pos.x() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2));
+		ay = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * -pos.y() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2));
+		az = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * -pos.z() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2));
 		return;
 	}	
 
-	void step_euler(double dt, body* acting_force) {
-		double ax, ay;
-		acting_force->compute_acceleration(this->pos(), ax, ay);
+	void step_euler(body* acting_force, double dt) {
+		double ax, ay, az;
+		acting_force->compute_acceleration(this->pos(), ax, ay, az);
 		this->x(this->vx() * dt);
 		this->y(this->vy() * dt);
+		this->z(this->vz() * dt);
 		this->vx(ax * dt);
 		this->vy(ay * dt);
+		this->vz(az * dt);
 		return;
 	}
 	
-	void step_runge_kutta(double dt, body* acting_force) {
+	void step_runge_kutta(body* acting_force, double dt) {
 		// Declare Runge-Kutta variables
-		double k1vx, k1vy, k2vx, k2vy, k3vx, k3vy, k4vx, k4vy;
+		double k1vx, k1vy, k1vz, k2vx, k2vy, k2vz, k3vx, k3vy, k3vz, k4vx, k4vy, k4vz;
 
 		// Calculates Runge-Kutta variables 
-		double k1x = this->vx(), k1y = this->vy();
-		acting_force->compute_acceleration(this->pos(), k1vx, k1vy);
+		double k1x = this->vx(), k1y = this->vy(), k1z = this->vz();
+		acting_force->compute_acceleration(this->pos(), k1vx, k1vy, k1vz);
 
-		double k2x = this->vx() + (k1vx * (dt / 2.0)), k2y = this->vy() + (k1vy * (dt / 2.0));
-		acting_force->compute_acceleration(this->pos() + point3(k1x * (dt / 2.0), k1y * (dt / 2.0), 0.0), k2vx, k2vy);
+		double k2x = this->vx() + (k1vx * (dt / 2.0)), k2y = this->vy() + (k1vy * (dt / 2.0)), k2z = this->vz() + (k1vz * (dt / 2.0));
+		acting_force->compute_acceleration(this->pos() + point3(k1x * (dt / 2.0), k1y * (dt / 2.0), k1z * (dt / 2.0)), k2vx, k2vy, k2vz);
 
-		double k3x = this->vx() + k2vx * (dt / 2.0), k3y = this->vy() + k2vy * (dt / 2.0);
-		acting_force->compute_acceleration(this->pos() + point3(k2x * (dt / 2.0), k2y * (dt / 2.0), 0.0), k3vx, k3vy);
+		double k3x = this->vx() + k2vx * (dt / 2.0), k3y = this->vy() + k2vy * (dt / 2.0), k3z = this->vz() + (k2vz * (dt / 2.0));
+		acting_force->compute_acceleration(this->pos() + point3(k2x * (dt / 2.0), k2y * (dt / 2.0), k2z * (dt / 2.0)), k3vx, k3vy, k3vz);
 
-		double k4x = this->vx() + k3vx * dt, k4y = this->vy() + k3vy * dt;
-		acting_force->compute_acceleration(this->pos() + point3(k3x * dt, k3y * dt, 0.0), k4vx, k4vy);
+		double k4x = this->vx() + k3vx * dt, k4y = this->vy() + k3vy * dt, k4z = this->vz() + k3vz * dt;
+		acting_force->compute_acceleration(this->pos() + point3(k3x * dt, k3y * dt, k3z * dt), k4vx, k4vy, k4vz);
 
 		// Updates position and velocity
-		this->x(this->x() + (dt / 6.0) * (k1x + (2.0 * k2x) + (2.0 * k3x) + k4x));
-		this->y(this->y() + (dt / 6.0) * (k1y + (2.0 * k2y) + (2.0 * k3y) + k4y));
-		this->vx(this->vx() + (dt / 6.0) * (k1vx + (2.0 * k2vx) + (2.0 * k3vx) + k4vx));
-		this->vy(this->vy() + (dt / 6.0) * (k1vy + (2.0 * k2vy) + (2.0 * k3vy) + k4vy));
+		this->x(this->x() + (dt / 6.0) * (k1x + (2.0 * k2x) + (2.0 * k3x) + k4x)); // Update X
+		this->y(this->y() + (dt / 6.0) * (k1y + (2.0 * k2y) + (2.0 * k3y) + k4y)); // Update Y
+		this->z(this->z() + (dt / 6.0) * (k1z + (2.0 * k2z) + (2.0 * k3z) + k4z)); // Update Z
+		this->vx(this->vx() + (dt / 6.0) * (k1vx + (2.0 * k2vx) + (2.0 * k3vx) + k4vx)); // Update Vx
+		this->vy(this->vy() + (dt / 6.0) * (k1vy + (2.0 * k2vy) + (2.0 * k3vy) + k4vy)); // Update Vy
+		this->vz(this->vz() + (dt / 6.0) * (k1vz + (2.0 * k2vz) + (2.0 * k3vz) + k4vz)); // Update Vz
 
 		return;
 	}

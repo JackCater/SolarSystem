@@ -17,6 +17,7 @@ private:
 public:
 	universe() {} // Default constructor
 	universe(body* object) { add(object); } // Modified constructor
+	~universe() {} // Destructor
 
 	void clear() { objects.clear(); } // Removes all planets/stars from the universe
 	void add(body* object) { objects.push_back(object); } // Adds planet/star to the universe
@@ -24,11 +25,23 @@ public:
 	unsigned __int64 length() const { return objects.size(); }
 	body* body_at(int i) const { return objects.at(i); }
 
-	void total_force() {
-		for (const auto& object : objects) {
-			double ax, ay, az;
-			object->compute_acceleration(point3(1000000000.0, 500000000.0, 0), ax, ay, az);
-		}
+	void step_euler(body* acting_force, double dt) {
+		for (const auto& object : objects)
+			object->step_euler(acting_force, dt);
+		return; 
+	}	
+	
+	void step_runge_kutta(body* acting_force, double dt) {
+		for (const auto& object : objects)
+			object->step_runge_kutta(acting_force, dt);
+		return; 
+	}
+
+	void total_force(double dt) {
+		for (const auto& object : objects)
+			for (size_t i = 0; i < objects.size(); i++) 
+				if (object != objects.at(i)) 
+					object->step_runge_kutta(objects.at(i), dt);
 	}
 };
 

@@ -27,22 +27,32 @@ public:
 	/// <param name="vel">Velocity of body in 3D vector form</param>
 	body(point3 centre, const double r, const double m, vel3 vel) : _centre(centre), _radius(r), _mass(m), _velocity(vel) {} // Modified constructor
 
+	~body() {}; // Destructor
+
 	void compute_acceleration(point3 pos, double& ax, double& ay, double& az) {
-		ax = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * -pos.x() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2));
-		ay = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * -pos.y() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2));
-		az = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * -pos.z() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2));
+		ax = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (-pos.x() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)));
+		ay = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (-pos.y() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)));
+		az = (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (-pos.z() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)));
 		return;
 	}	
 
 	void step_euler(body* acting_force, double dt) {
 		double ax, ay, az;
 		acting_force->compute_acceleration(this->pos(), ax, ay, az);
-		this->x(this->vx() * dt);
-		this->y(this->vy() * dt);
-		this->z(this->vz() * dt);
-		this->vx(ax * dt);
-		this->vy(ay * dt);
-		this->vz(az * dt);
+		this->x(this->x() + this->vx() * dt);
+		this->y(this->y() + this->vy() * dt);
+		this->z(this->z() + this->vz() * dt);
+		this->vx(this->vx() + ax * dt);
+		this->vy(this->vy() + ay * dt);
+		this->vz(this->vz() + az * dt);
+
+		// If result is NaN set the value to 0
+		if (this->x() != this->x()) this->x(0); // According to the IEEE standard, NaN values
+		if (this->y() != this->y()) this->y(0); // have the odd property that comparisons involving them are always false
+		if (this->z() != this->z()) this->z(0); // that is for a double d; d != d will be true only if d is NaN
+		if (this->vx() != this->vx()) this->vx(0);
+		if (this->vy() != this->vy()) this->vy(0);
+		if (this->vz() != this->vz()) this->vz(0);
 		return;
 	}
 	
@@ -71,6 +81,13 @@ public:
 		this->vy(this->vy() + (dt / 6.0) * (k1vy + (2.0 * k2vy) + (2.0 * k3vy) + k4vy)); // Update Vy
 		this->vz(this->vz() + (dt / 6.0) * (k1vz + (2.0 * k2vz) + (2.0 * k3vz) + k4vz)); // Update Vz
 
+		// If result is NaN set the value to 0
+		if (this->x() != this->x()) this->x(0); // According to the IEEE standard, NaN values
+		if (this->y() != this->y()) this->y(0); // have the odd property that comparisons involving them are always false
+		if (this->z() != this->z()) this->z(0); // that is for a double d; d != d will be true only if d is NaN
+		if (this->vx() != this->vx()) this->vx(0);
+		if (this->vy() != this->vy()) this->vy(0);
+		if (this->vz() != this->vz()) this->vz(0);
 		return;
 	}
 

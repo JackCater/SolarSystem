@@ -14,6 +14,7 @@ const double infinity = std::numeric_limits<double>::infinity(); // infinity
 const double pi = 3.1415926535897932385; // pi (rather than using M_PI from cmath)
 const double au = 149597870700; // Astromonical unit in m
 const double lightyear = 9460730472580800; // light year in m
+const double parsec = 96939420213600000; // Parsec in m
 const double speed_of_light = 299792458; // speed of light in m/s
 const double c = 299792458; // speed of light in m/s
 const double grav_constant = 6.67430E-11; // Gravitational constant in N (m/kg)^2
@@ -54,7 +55,6 @@ const double neptune_radius = 24764000; // Neptune radis in m
 // Pluto
 const double pluto_mass = 0.01303E14; // Pluto mass in kg
 const double pluto_radius = 1188000; // Pluto mass in m
-
 
 // Utility Functions
 inline double degrees_to_radians(double degrees) { return degrees * pi / 180.0; } // Converts degree to radians

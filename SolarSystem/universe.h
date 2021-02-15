@@ -22,9 +22,6 @@ public:
 	void clear() { objects.clear(); } // Removes all planets/stars from the universe
 	void add(body* object) { objects.push_back(object); } // Adds planet/star to the universe
 
-	unsigned __int64 length() const { return objects.size(); }
-	body* body_at(int i) const { return objects.at(i); }
-
 	void step_euler(body* acting_force, double dt) {
 		for (const auto& object : objects)
 			object->step_euler(acting_force, dt);
@@ -43,6 +40,10 @@ public:
 				if (object != objects.at(i)) 
 					object->step_runge_kutta(objects.at(i), dt);
 	}
+
+	// Getters
+	unsigned __int64 num_of_bodies() const { return objects.size(); } // Gets number of bodies in universe
+	body* body_at(int i) const { return objects.at(i); } // Gets the body at i in the list of bodies
 };
 
 /// <summary>

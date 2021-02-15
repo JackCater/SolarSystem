@@ -68,16 +68,16 @@ inline vec3 cross(const vec3& u, const vec3& v) { // Vector cross product
 
 inline vec3 unit_vector(vec3 v) { return v / v.length(); } // Unit vector
 
-inline vec3 unit_vector_two(vec3 v, vec3 u) { return (v - u) / abs(v.length() - u.length()); }
+inline vec3 unit_vector_two_vectors(vec3 v, vec3 u) { return (v - u) / abs(v.length() - u.length()); } // Unit vector between two vectors
 
-inline 	double distance(const point3& u, const point3& v) {
+inline 	double distance(const point3& u, const point3& v) { // Absolute distance between two vectors
 	return sqrt(
 		((u.x() - v.x()) * (u.x() - v.x())) +
 		((u.y() - v.y()) * (u.y() - v.y())) +
 		((u.z() - v.z()) * (u.z() - v.z())));
 }
 
-inline vec3 distance_vector(const point3& u, const point3& v) {
+inline vec3 distance_vector(const point3& u, const point3& v) { // Distance between each axis in vector
 	return vec3(u.x() - v.x(),
 		u.y() - v.y(),
 		u.z() - v.z());

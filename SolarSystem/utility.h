@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "vec3.h"
-#include "body.h"
 
 // Constants
 const double infinity = std::numeric_limits<double>::infinity(); // infinity

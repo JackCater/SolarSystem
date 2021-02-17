@@ -15,6 +15,7 @@ body jupiter("Jupiter", point3(-740520000000.0, 0.0, 0.0), jupiter_radius, jupit
 body saturn("Saturn", point3(-1352550000000.0, 0.0, 0.0), saturn_radius, saturn_mass, vel3(0.0, -10180.0, 0.0));
 body uranus("Uranus", point3(-2741300000000.0, 0.0, 0.0), uranus_radius, uranus_mass, vel3(0.0, -7110.0, 0.0));
 body neptune("Neptune", point3(-4444450000000.0, 0.0, 0.0), neptune_radius, neptune_mass, vel3(0.0, -5500.0, 0.0));
+// body pluto()
 data_collection collection(1000, 1.0);
 
 std::ofstream file_;
@@ -34,7 +35,7 @@ universe create_universe(void) {
 }
 
 int main(int argc, char* argv[]) {     
-    //  declarations of variables    
+    //  declarations of variables     
     char* outfilename{};
     // Read in output file, abort if there are too few command-line arguments
     if (argc <= 1) {
@@ -42,14 +43,13 @@ int main(int argc, char* argv[]) {
             " read also output file on same line" << std::endl;
         return -1;
     }
-    else outfilename = argv[1]; 
-    
+    else outfilename = argv[1];       
     
     // const char* outfilename = "Universe_Test4.csv";
     file_.open(outfilename);
     double time = 0.0;
     double dt = 60.0 * 60.0 * 24.0;
-    double final_time = 365.0 * 60.0 * 60.0 * 24.0;
+    double final_time = 365.0 * 60.0 * 60.0 * 24.0 * 1000;
     int step_no = 0;
 
     universe u = create_universe();
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
     file_ << "\n";
     while (time < final_time) {
         std::cerr << "\rScanlines remaining: " << (final_time / dt) - step_no - 1 << ' ' << std::flush;
-        u.step_runge_kutta(&sun, dt);
+        u.total_force(&u, dt);
         output_no_whitespace(step_no, u, file_, ",");
         step_no++;
         time += dt;

@@ -6,6 +6,9 @@
 
 #include "body.h"
 
+// Forward decleration
+class body;
+
 /// <summary>
 /// A class to add stars or planets to the universe
 /// e.g. to create a solar system
@@ -34,11 +37,9 @@ public:
 		return; 
 	}
 
-	void total_force(double dt) {
+	void total_force(universe* u, double dt) {
 		for (const auto& object : objects)
-			for (size_t i = 0; i < objects.size(); i++) 
-				if (object != objects.at(i)) 
-					object->step_runge_kutta(objects.at(i), dt);
+			object->step_runge_kutta(u, dt);
 	}
 
 	// Getters

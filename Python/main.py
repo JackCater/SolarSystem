@@ -76,5 +76,5 @@ class PlotTraj:
 
 
 if __name__ == "__main__":
-    planets = PlotTraj("ILoveHannahCronau.csv")
+    planets = PlotTraj("test.csv")
     PlotTraj.animate(planets)

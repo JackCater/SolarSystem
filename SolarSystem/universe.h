@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "body.h"
+#include "error.h"
 
 // Forward decleration
 class body;
@@ -25,22 +26,80 @@ public:
 	void clear() { objects.clear(); } // Removes all planets/stars from the universe
 	void add(body* object) { objects.push_back(object); } // Adds planet/star to the universe
 
-	void step_euler(body* acting_force, double dt) {
-		for (const auto& object : objects)
-			object->step_euler(acting_force, dt);
-		return; 
-	}	
-	
-	void step_runge_kutta(body* acting_force, double dt) {
-		for (const auto& object : objects)
-			object->step_runge_kutta(acting_force, dt);
-		return; 
-	}
+	/// <summary>
+	/// Computes the next step of the simulation using the Euler method
+	/// for all planets in the universe but with only ONE body being the acting force
+	/// </summary>
+	/// <param name="acting_force">The body being the acting force, usually a star</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code. See error.h for more info</returns>
+	int step_euler(body* acting_force, double dt) {
+		if (acting_force == nullptr) return ERR_NO_ACTING_FORCE;
 
-	void total_force(universe* u, double dt) {
-		for (const auto& object : objects)
-			object->step_runge_kutta(u, dt);
-	}
+		for (const auto& object : objects) {
+			int retval = object->step_euler(acting_force, dt);
+			if (retval != NO_ERROR) return retval;
+		} // end for
+		return NO_ERROR; 
+	} // end step_euler
+	
+	/// <summary>
+	/// Computes the next step in the simulation using the Euler method
+	/// for all planets in the universe with all bodies acting as a force
+	/// </summary>
+	/// <param name="u">The universe</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code. See error.h for more info</returns>
+	int step_euler(universe* u, double dt) {
+		if (u == nullptr) return ERR_NO_BODY_IN_UNIVERSE;
+
+		for (size_t i = 0; i < u->num_of_bodies(); i++)
+			if (u->body_at(i) == nullptr) return ERR_NO_ACTING_FORCE;
+
+		for (const auto& object : objects) { 
+			int retval = object->step_euler(u, dt); 
+			if (retval != NO_ERROR) return retval;
+		} // end for
+		return NO_ERROR; 
+	} // end step_euler
+	
+	/// <summary>
+	/// Computes the next step of the simulation using the Runge Kutta method
+	/// for all planets in the universe but with only ONE body being the acting force
+	/// </summary>
+	/// <param name="acting_force">The body being the acting force, usually a star</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code. See error.h for more info</returns>
+	int step_runge_kutta(body* acting_force, double dt) {
+		if (acting_force == nullptr) return ERR_NO_ACTING_FORCE;
+
+		for (const auto& object : objects) {
+			int retval = object->step_runge_kutta(acting_force, dt);
+			if (retval != NO_ERROR) return retval;
+		} // end for			
+
+		return NO_ERROR; 
+	} // end step_runge_kutta
+
+	/// <summary>
+	/// Computes the next step in the simulation using the Runge Kutta method
+	/// for all planets in the universe with all bodies acting as a force
+	/// </summary>
+	/// <param name="u">The universe</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code. See error.h for more info</returns>
+	int step_runge_kutta(universe* u, double dt) { 
+		if (u == nullptr) return ERR_NO_BODY_IN_UNIVERSE;
+
+		for (size_t i = 0; i < u->num_of_bodies(); i++)
+			if (u->body_at(i) == nullptr) return ERR_NO_ACTING_FORCE;
+
+		for (const auto& object : objects) {
+			int retval = object->step_runge_kutta(u, dt);
+			if (retval != NO_ERROR) return retval;
+		} // end for
+		return NO_ERROR; 
+	} // end step_runge_kutta
 
 	// Getters
 	unsigned __int64 num_of_bodies() const { return objects.size(); } // Gets number of bodies in universe
@@ -49,7 +108,7 @@ public:
 
 /// <summary>
 /// A class containing the data collection information such as 
-/// time and time step
+/// time and time step, this may be useful
 /// </summary>
 class data_collection
 {
@@ -73,4 +132,4 @@ public:
 	void time(double time) { _time = std::move(time); } // Set time
 };
 
-#endif
+#endif // UNIVERSE_H

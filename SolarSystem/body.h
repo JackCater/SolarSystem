@@ -10,6 +10,7 @@
 
 #include "vec3.h"
 #include "utility.h"
+#include "error.h"
 
 // Forward decleration of universe class
 class universe;
@@ -53,35 +54,56 @@ public:
 	/// <param name="ax">Acceleration in the x direction</param>
 	/// <param name="ay">Acceleration in the y direction</param>
 	/// <param name="az">Acceleration in the z direction</param>
-	void compute_acceleration(point3 pos, double& ax, double& ay, double& az) {
+	/// <returns>The error code. See error.h for more info</returns>
+	int compute_acceleration(point3 pos, double& ax, double& ay, double& az) {
+		if (pos.length() == 0) return ERR_BODIES_COLLIDED; // If the distance between two bodies is 0 then they must have collided
 		ax += (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (-pos.x() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)));
 		ay += (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (-pos.y() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)));
 		az += (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (-pos.z() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)));
-		return;
+
+		if (ax != ax) return ERR_AX_NAN;
+		if (ay != ay) return ERR_AY_NAN;
+		if (az != az) return ERR_AZ_NAN;
+		return NO_ERROR;
 	}
 
 	/// <summary>
 	/// Computes one step using the Euler method
 	/// NOTE: This method only uses ONE body in the computation
-	/// So usually the sun is input as the acting force
+	/// So usually the star is input as the acting force
 	/// </summary>
-	/// <param name="acting_force">The acting force, usually the sun</param>
+	/// <param name="acting_force">The acting force, usually the star</param>
 	/// <param name="dt">The time step</param>
-	void step_euler(body* acting_force, double dt);	
+	/// <returns>The error code. See error.h for more info</returns>
+	int step_euler(body* acting_force, double dt);
 
 	/// <summary>
-	/// 
+	/// Computes one step using the Euler method
+	/// and uses all bodies in the universe
 	/// </summary>
-	/// <param name="acting_force"></param>
-	/// <param name="dt"></param>
-	void step_runge_kutta(body* acting_force, double dt);
+	/// <param name="u">The universe</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code. See error.h for more info</returns>
+	int step_euler(universe* u, double dt);
 
 	/// <summary>
-	/// 
+	/// Computes one step using the Runge Kutta method
+	/// NOTE: This method uses ONE body in the computation
+	/// So usually thr star is input at the acting force
 	/// </summary>
-	/// <param name="universe"></param>
-	/// <param name="dt"></param>
-	void step_runge_kutta(universe* universe, double dt);
+	/// <param name="acting_force">The acting force, usually the star</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code. See error.h for more info</returns>
+	int step_runge_kutta(body* acting_force, double dt);
+
+	/// <summary>
+	/// Computes one step using the Runge kutta method
+	/// and uses all bodies in the universe
+	/// </summary>
+	/// <param name="universe">The universe</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code. See error.h for more info</returns>
+	int step_runge_kutta(universe* universe, double dt);
 	
 	// Getters
 	std::string name()	const { return _name;			} // Get name of body
@@ -107,4 +129,4 @@ public:
 	void vel(vel3 vel)			{ _velocity = std::move(vel);		} // Set velocity
 };
 
-#endif
+#endif // BODY_H

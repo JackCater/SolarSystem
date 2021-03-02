@@ -16,7 +16,7 @@ const double lightyear = 9460730472580800; // light year in m
 const double parsec = 96939420213600000; // Parsec in m
 const double speed_of_light = 299792458; // speed of light in m/s
 const double c = 299792458; // speed of light in m/s
-const double grav_constant = 6.67430E-11; // Gravitational constant in N (m/kg)^2
+const double grav_constant = 1; // 6.67430E-11; // Gravitational constant in N (m/kg)^2
 
 // Planets information all data from nssdc.gsfc.nasa.gov
 // Sun
@@ -61,4 +61,4 @@ inline double radians_to_degrees(double radians) { return radians * 180.0 / pi; 
 // inline double sphere_volume(body b) { return (4.0 / 3.0) * pi * b.radius() * b.radius() * b.radius(); } // Calculates a spheres volume
 // inline double density(body b) { return b.mass() / sphere_volume(b); } // Calculated the density of a star/planet
 
-#endif
+#endif // UTILITY_H

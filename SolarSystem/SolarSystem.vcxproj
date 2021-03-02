@@ -145,9 +145,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="body.h" />
+    <ClInclude Include="error.h" />
     <ClInclude Include="output.h" />
     <ClInclude Include="universe.h" />
     <ClInclude Include="utility.h" />
+    <ClInclude Include="vec2.h" />
     <ClInclude Include="vec3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

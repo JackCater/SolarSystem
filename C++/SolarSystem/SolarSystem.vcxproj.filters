@@ -38,5 +38,11 @@
     <ClInclude Include="output.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="vec2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,9 +2,10 @@
 #include <fstream>
 #include <iomanip>
 
-#include"body.h"
-#include"universe.h"
+#include "body.h"
+#include "universe.h"
 #include "output.h"
+
 
 body sun("Sun", point3(0.0, 0.0, 0.0), solar_radius, solar_mass, vel3(0.0, 0.0, 0.0));
 body mercury("Mercury", point3(-46000000000.0, 0.0, 0.0), mercury_radius, mercury_mass, vel3(0.0, -58980.0, 0.0));
@@ -16,12 +17,17 @@ body saturn("Saturn", point3(-1352550000000.0, 0.0, 0.0), saturn_radius, saturn_
 body uranus("Uranus", point3(-2741300000000.0, 0.0, 0.0), uranus_radius, uranus_mass, vel3(0.0, -7110.0, 0.0));
 body neptune("Neptune", point3(-4444450000000.0, 0.0, 0.0), neptune_radius, neptune_mass, vel3(0.0, -5500.0, 0.0));
 // body pluto()
+
+body x0("Body1", point3(-0.970, 0.243, 0.0), 1, 1, vel3(-0.466, -0.433, 0.0));
+body x1("Body2", point3(0.970, -0.243, 0.0), 1, 1, vel3(-0.466, -0.433, 0.0));
+body x2("Body3", point3(0.0, 0.0, 0.0), 1, 1, vel3(2.0*0.466, 2.0*0.433, 0.0));
 data_collection collection(1000, 1.0);
 
 std::ofstream file_;
 
 universe create_universe(void) {
     universe u;
+    /*
     u.add(&sun);
     u.add(&mercury);
     u.add(&venus);
@@ -31,6 +37,10 @@ universe create_universe(void) {
     u.add(&saturn);
     u.add(&uranus);
     u.add(&neptune);
+    */
+    u.add(&x0);
+    u.add(&x1);
+    u.add(&x2);
     return u;
 }
 
@@ -48,8 +58,8 @@ int main(int argc, char* argv[]) {
     // const char* outfilename = "Universe_Test4.csv";
     file_.open(outfilename);
     double time = 0.0;
-    double dt = 60.0 * 60.0 * 24.0;
-    double final_time = 365.0 * 60.0 * 60.0 * 24.0 * 1000;
+    double dt = 0.01;
+    double final_time = 100;
     int step_no = 0;
 
     universe u = create_universe();
@@ -80,12 +90,15 @@ int main(int argc, char* argv[]) {
     }
     file_ << "\n";
     while (time < final_time) {
-        std::cerr << "\rScanlines remaining: " << (final_time / dt) - step_no - 1 << ' ' << std::flush;
-        u.total_force(&u, dt);
+        int retval = NO_ERROR;
+        std::cerr << "\rScanlines remaining: " << (final_time / dt) - step_no << ' ' << "Error code: " << retval << "    " << std::flush;
+        retval = u.step_runge_kutta(&u, dt);
+        if (retval != NO_ERROR) return retval;
+
         output_no_whitespace(step_no, u, file_, ",");
         step_no++;
         time += dt;
-    } 
+    } // end while
     std::cerr << "\nDone.\n";
 
 	return 0;

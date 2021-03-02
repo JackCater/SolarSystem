@@ -81,4 +81,4 @@ void output(double step_number, body b, std::ofstream& ofile, const char* sepera
     ofile << std::endl;
 }  // end of function output
 
-#endif
+#endif // OUTPUT_H

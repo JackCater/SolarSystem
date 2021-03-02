@@ -1,4 +1,4 @@
-// File containing some useful vector identities
+// File containing some useful 3D vector identities
 #ifndef VEC3_H
 #define VEC3_H
 
@@ -12,6 +12,7 @@ public:
 	vec3() : e{ 0,0,0 } {}; // Default constructor
 	vec3(double e0, double e1, double e2) : e{ e0,e1,e2 } {} // Modified contructor
 
+	// Getters
 	double x() const { return e[0]; } // GetX
 	double y() const { return e[1]; } // GetY
 	double z() const { return e[2]; } // GetZ
@@ -60,10 +61,15 @@ inline double dot(const vec3& u, const vec3& v) { // Vector dot product
 		+ u.z() * v.z();
 } // end dot
 
-inline vec3 cross(const vec3& u, const vec3& v) { // Vector cross product
+inline vec3 cross_vector(const vec3& u, const vec3& v) { // Vector cross product
 	return vec3(u.y() * v.z() - u.z() * v.y(),
 		u.z() * v.x() - u.x() * v.z(),
 		u.x() * v.y() - u.y() * v.x());
+} // end cross_vector
+
+inline double cross(const vec3& u, const vec3& v) {
+	vec3 c = cross_vector(u, v);
+	return c.x() - c.y() + c.z();
 } // end cross
 
 inline vec3 unit_vector(vec3 v) { return v / v.length(); } // Unit vector
@@ -75,12 +81,12 @@ inline 	double distance(const point3& u, const point3& v) { // Absolute distance
 		((u.x() - v.x()) * (u.x() - v.x())) +
 		((u.y() - v.y()) * (u.y() - v.y())) +
 		((u.z() - v.z()) * (u.z() - v.z())));
-}
+} // end distance
 
 inline vec3 distance_vector(const point3& u, const point3& v) { // Distance between each axis in vector
 	return vec3(u.x() - v.x(),
 		u.y() - v.y(),
 		u.z() - v.z());
-}
+} // end distance_vector
 
-#endif
+#endif // VEC3_H

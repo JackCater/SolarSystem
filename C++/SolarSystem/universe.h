@@ -16,16 +16,62 @@ class body;
 /// </summary>
 class universe : public body {
 private:
+	/*********************************************************
+	Member variables
+	*********************************************************/
 	std::vector<body*> objects; // List of objects in the universe
 
 public:
-	universe() {} // Default constructor
+	/*********************************************************
+	Constructors and destructors
+	*********************************************************/
+	/// <summary>
+	/// Default constructor
+	/// Constructs an empty universe
+	/// </summary>
+	universe() {}
+
+	/// <summary>
+	/// Modified constructor
+	/// </summary>
+	/// <param name="object">The body in the universe</param>
 	universe(body* object) { add(object); } // Modified constructor
+	
+	/// <summary>
+	/// Destructor
+	/// </summary>
 	~universe() {} // Destructor
 
-	void clear() { objects.clear(); } // Removes all planets/stars from the universe
-	void add(body* object) { objects.push_back(object); } // Adds planet/star to the universe
+	/// <summary>
+	/// Removes all planets/stars from the universe
+	/// </summary>
+	void clear() { objects.clear(); }
 
+	/// <summary>
+	/// Adds planet/star to the universe
+	/// </summary>
+	/// <param name="object">The planet/star</param>
+	void add(body* object) { objects.push_back(object); }
+
+	/*********************************************************
+	Getters
+	*********************************************************/
+	/// <summary>
+	/// Gets the number of bodies in the universe
+	/// </summary>
+	/// <returns>The number of bodies in the universe</returns>
+	unsigned __int64 num_of_bodies() const { return objects.size(); }
+
+	/// <summary>
+	/// Get the body in the universe at i
+	/// </summary>
+	/// <param name="i">The bodies index in the universe</param>
+	/// <returns>A pointer to the body in the universe</returns>
+	body* body_at(int i) const { return objects.at(i); }
+
+	/*********************************************************
+	Methods for computation
+	*********************************************************/
 	/// <summary>
 	/// Computes the next step of the simulation using the Euler method
 	/// for all planets in the universe but with only ONE body being the acting force
@@ -53,7 +99,7 @@ public:
 	int step_euler(universe* u, double dt) {
 		if (u == nullptr) return ERR_NO_BODY_IN_UNIVERSE;
 
-		for (size_t i = 0; i < u->num_of_bodies(); i++)
+		for (auto i = 0; i < u->num_of_bodies(); i++)
 			if (u->body_at(i) == nullptr) return ERR_NO_ACTING_FORCE;
 
 		for (const auto& object : objects) { 
@@ -91,7 +137,7 @@ public:
 	int step_runge_kutta(universe* u, double dt) { 
 		if (u == nullptr) return ERR_NO_BODY_IN_UNIVERSE;
 
-		for (size_t i = 0; i < u->num_of_bodies(); i++)
+		for (auto i = 0; i < u->num_of_bodies(); i++)
 			if (u->body_at(i) == nullptr) return ERR_NO_ACTING_FORCE;
 
 		for (const auto& object : objects) {
@@ -100,10 +146,6 @@ public:
 		} // end for
 		return NO_ERROR; 
 	} // end step_runge_kutta
-
-	// Getters
-	unsigned __int64 num_of_bodies() const { return objects.size(); } // Gets number of bodies in universe
-	body* body_at(int i) const { return objects.at(i); } // Gets the body at i in the list of bodies
 };
 
 /// <summary>

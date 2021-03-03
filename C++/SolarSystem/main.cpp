@@ -67,20 +67,20 @@ int main(int argc, char* argv[]) {
     file_ << "NUM_BODIES\n" << u.num_of_bodies() <<"\n";
     file_ << "\nNUM_STEPS\n" << final_time / dt << "\n";
     file_ << "\nNAMES\n";
-    for (size_t i = 0; i < u.num_of_bodies(); i++)
+    for (auto i = 0; i < u.num_of_bodies(); i++)
         file_ << u.body_at(i)->name() << "\n";    
     
     file_ << "\nMASSES\n";
-    for (size_t i = 0; i < u.num_of_bodies(); i++)
+    for (auto i = 0; i < u.num_of_bodies(); i++)
         file_ << u.body_at(i)->mass() << "\n";    
     
     file_ << "\nRADII\n";
-    for (size_t i = 0; i < u.num_of_bodies(); i++)
+    for (auto i = 0; i < u.num_of_bodies(); i++)
         file_ << u.body_at(i)->radius() << "\n";
 
     file_ << "\nTRAJECTORIES\n";
     file_ << "Step No,";
-    for (size_t i = 0; i < u.num_of_bodies(); i++) {
+    for (auto i = 0; i < u.num_of_bodies(); i++) {
         file_ << u.body_at(i)->name() <<"x" << ",";
         file_ << u.body_at(i)->name() <<"y" << ",";
         file_ << u.body_at(i)->name() <<"z" << ",";

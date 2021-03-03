@@ -36,7 +36,7 @@ int body::step_euler(universe* u, double dt) {
 	if (u == nullptr) return ERR_NO_BODY_IN_UNIVERSE;
 
 	double ax{}, ay{}, az{};
-	for (size_t i = 0; i < u->num_of_bodies(); i++)
+	for (auto i = 0; i < u->num_of_bodies(); i++)
 		if (this != u->body_at(i)) {
 			int retval = u->body_at(i)->compute_acceleration(this->pos(), ax, ay, az);
 			if (retval != NO_ERROR) return retval;
@@ -114,7 +114,7 @@ int body::step_runge_kutta(universe* u, double dt) {
 	// The position variables are dependant on only the current velocity of a body
 	// The velocity variables are dependant on the force due to all bodies in the universe
 	double k1x = this->vx(), k1y = this->vy(), k1z = this->vz();
-	for (size_t i = 0; i < u->num_of_bodies(); i++) 
+	for (auto i = 0; i < u->num_of_bodies(); i++) 
 		if (this != u->body_at(i)) {
 			u->body_at(i)->compute_acceleration(distance_vector(this->pos(), u->body_at(i)->pos()), k1vx, k1vy, k1vz);
 			if (retval != NO_ERROR) return retval;
@@ -122,21 +122,21 @@ int body::step_runge_kutta(universe* u, double dt) {
 
 	// Because k2x depends on k1vx they all have to be computed in different for loops
 	double k2x = this->vx() + (k1vx * (dt / 2.0)), k2y = this->vy() + (k1vy * (dt / 2.0)), k2z = this->vz() + (k1vz * (dt / 2.0));
-	for (size_t i = 0; i < u->num_of_bodies(); i++) 
+	for (auto i = 0; i < u->num_of_bodies(); i++) 
 		if (this != u->body_at(i)) {
 			u->body_at(i)->compute_acceleration(distance_vector(this->pos(), u->body_at(i)->pos()) + point3(k1x * (dt / 2.0), k1y * (dt / 2.0), k1z * (dt / 2.0)), k2vx, k2vy, k2vz);
 			if (retval != NO_ERROR) return retval;
 		} // end if
 	
 	double k3x = this->vx() + k2vx * (dt / 2.0), k3y = this->vy() + k2vy * (dt / 2.0), k3z = this->vz() + (k2vz * (dt / 2.0));
-	for (size_t i = 0; i < u->num_of_bodies(); i++) 
+	for (auto i = 0; i < u->num_of_bodies(); i++) 
 		if (this != u->body_at(i)) {
 			u->body_at(i)->compute_acceleration(distance_vector(this->pos(), u->body_at(i)->pos()) + point3(k2x * (dt / 2.0), k2y * (dt / 2.0), k2z * (dt / 2.0)), k3vx, k3vy, k3vz);
 			if (retval != NO_ERROR) return retval;
 		} // end if
 	
 	double k4x = this->vx() + k3vx * dt, k4y = this->vy() + k3vy * dt, k4z = this->vz() + k3vz * dt;
-	for (size_t i = 0; i < u->num_of_bodies(); i++) 
+	for (auto i = 0; i < u->num_of_bodies(); i++) 
 		if (this != u->body_at(i)) {
 			u->body_at(i)->compute_acceleration(distance_vector(this->pos(), u->body_at(i)->pos()) + point3(k3x * dt, k3y * dt, k3z * dt), k4vx, k4vy, k4vz);
 			if (retval != NO_ERROR) return retval;

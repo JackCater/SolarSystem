@@ -20,7 +20,7 @@ void output(double step_number, universe u, std::ofstream& ofile)
         ofile << std::setw(15) << std::setprecision(8) << u.body_at(i)->vz();
     }
     ofile << std::endl;
-}  // end of function output
+}  // end output
 
 void output(double step_number, universe u, std::ofstream& ofile, const char* seperator)
 {
@@ -36,7 +36,7 @@ void output(double step_number, universe u, std::ofstream& ofile, const char* se
         ofile << std::setw(15) << std::setprecision(8) << u.body_at(i)->vz() << seperator;
     }
     ofile << std::endl;
-}  // end of function output
+}  // end output
 
 void output_no_whitespace(double step_number, universe u, std::ofstream& ofile, const char* seperator)
 {
@@ -52,7 +52,7 @@ void output_no_whitespace(double step_number, universe u, std::ofstream& ofile, 
         ofile << std::setprecision(8) << u.body_at(i)->vz() << seperator;
     }
     ofile << std::endl;
-}  // end of function output
+}  // end output
 
 
 void output(double step_number, body b, std::ofstream& ofile)
@@ -66,7 +66,7 @@ void output(double step_number, body b, std::ofstream& ofile)
     ofile << std::setw(15) << std::setprecision(8) << b.vy() << " ";
     ofile << std::setw(15) << std::setprecision(8) << b.vz() << " ";
     ofile << std::endl;
-}  // end of function output
+}  // end output
 
 void output(double step_number, body b, std::ofstream& ofile, const char* seperator)
 {
@@ -79,6 +79,6 @@ void output(double step_number, body b, std::ofstream& ofile, const char* sepera
     ofile << std::setw(15) << std::setprecision(8) << b.vy() << seperator;
     ofile << std::setw(15) << std::setprecision(8) << b.vz() << seperator;
     ofile << std::endl;
-}  // end of function output
+}  // end output
 
 #endif // OUTPUT_H

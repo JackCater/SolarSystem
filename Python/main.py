@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import pandas as pd
 
-colour_list = ['red', 'orange', 'blue', 'yellow', 'lawngreen', 'aqua', 'purple', 'fuchsia', 'lightblue', 'chocolate',
+colour_list = ['red', 'orange', 'blue', 'lawngreen', 'aqua', 'purple', 'fuchsia', 'lightblue', 'chocolate',
                'khaki'] # Add more colours if you want too
 
 

@@ -18,9 +18,17 @@ body uranus("Uranus", point3(-2741300000000.0, 0.0, 0.0), uranus_radius, uranus_
 body neptune("Neptune", point3(-4444450000000.0, 0.0, 0.0), neptune_radius, neptune_mass, vel3(0.0, -5500.0, 0.0));
 // body pluto()
 
+// Three body problem solution
 body x0("Body1", point3(-0.970, 0.243, 0.0), 1, 1, vel3(-0.466, -0.433, 0.0));
 body x1("Body2", point3(0.970, -0.243, 0.0), 1, 1, vel3(-0.466, -0.433, 0.0));
 body x2("Body3", point3(0.0, 0.0, 0.0), 1, 1, vel3(2.0*0.466, 2.0*0.433, 0.0));
+
+// Test
+body v0("Body1", point3(0.0, 0.0, 0.0), 0.05, 0.25, vel3(0.0, 0.0, 0.0));
+body v1("Body2", point3(2.0, 2.0, 2.0), 0.05, 0.25, vel3(0.0, 0.0, 0.0));
+body v2("Body3", point3(5.0, 5.0, 5.0), 0.1, 0.25, vel3(0.0, 0.1, 0.0));
+body v3("Body4", point3(3.0, 3.0, 3.0), 0.1, 0.25, vel3(0.0, 0.0, 0.0));
+
 data_collection collection(1000, 1.0);
 
 std::ofstream file_;
@@ -37,25 +45,33 @@ universe create_universe(void) {
     u.add(&saturn);
     u.add(&uranus);
     u.add(&neptune);
-    */
+    
     u.add(&x0);
     u.add(&x1);
     u.add(&x2);
+    */
+    u.add(&v0);
+    u.add(&v1);
+    u.add(&v2);
+    u.add(&v3);
+
     return u;
 }
 
 int main(int argc, char* argv[]) {     
     //  declarations of variables     
+    
     char* outfilename{};
     // Read in output file, abort if there are too few command-line arguments
+    
     if (argc <= 1) {
         std::cout << "Bad Usage: " << argv[0] <<
             " read also output file on same line" << std::endl;
         return -1;
     }
-    else outfilename = argv[1];       
+    else outfilename = argv[1];   
     
-    // const char* outfilename = "Universe_Test4.csv";
+    //const char* outfilename = "Universe_Test.csv";
     file_.open(outfilename);
     double time = 0.0;
     double dt = 0.01;
@@ -93,7 +109,10 @@ int main(int argc, char* argv[]) {
         int retval = NO_ERROR;
         std::cerr << "\rScanlines remaining: " << (final_time / dt) - step_no << ' ' << "Error code: " << retval << "    " << std::flush;
         retval = u.step_runge_kutta(&u, dt);
-        if (retval != NO_ERROR) return retval;
+        if (retval != NO_ERROR) { 
+            std::cerr << "\nERROR: " << retval << " See error.h for more\n";
+            return retval; 
+        } // end if
 
         output_no_whitespace(step_no, u, file_, ",");
         step_no++;

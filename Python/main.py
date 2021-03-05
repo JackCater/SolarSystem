@@ -77,7 +77,7 @@ class PlotTraj:
         plt.ylim(min(min_array_y), max(max_array_y))
 
         for bodies in range(len(self.names)):
-            body_obj, = self.ax.plot([], [], colour_list[bodies], marker="o", lw=1)
+            body_obj, = self.ax.plot([], [], colour_list[bodies], marker=".", markersize=3.14 * self.radii[bodies], lw=1)
             line_obj, = self.ax.plot([], [], colour_list[bodies])
             self.data_list.append(body_obj, )
             self.line_list.append(line_obj, )
@@ -101,5 +101,5 @@ class PlotTraj:
 
 
 if __name__ == "__main__":
-    planets = PlotTraj("final_test.csv")
+    planets = PlotTraj("new_test_error.csv")
     PlotTraj.animate(planets)

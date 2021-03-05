@@ -23,11 +23,28 @@ private:
 	/*********************************************************
 	Member variables
 	*********************************************************/
-	const std::string _name; // Name of body
-	point3 _centre; // Centre of star/planet in 3D space (x, y, z)
-	const double _radius; // Radius of star/planet
-	const double _mass; // Mass of star/planet
-	vel3 _velocity; // Velocity of star/planet (vx, vy, vz)
+	const std::string _name;	// Name of body
+	point3 _centre;				// Centre of star/planet in 3D space (x, y, z)
+	double _radius;				// Radius of star/planet
+	double _mass;				// Mass of star/planet
+	vel3 _velocity;				// Velocity of star/planet (vx, vy, vz)
+	bool _include;				// Flag to determine whether the body should be included in the simulation
+								// By default this is true
+	
+	/*********************************************************
+	Private functions
+	*********************************************************/
+	/// <summary>
+	/// Sets the member variables of a body to 0
+	/// Used when two bodies collide
+	/// </summary>
+	void set_to_zero() {
+		this->_mass = 0;
+		this->_radius = 0;
+		this->_velocity = vel3(0.0, 0.0, 0.0);
+		this->_include = false; // Body will no longer be included in computations
+		return;
+	} // end set_to_zero
 
 public:
 	/*********************************************************
@@ -36,7 +53,7 @@ public:
 	/// <summary>
 	/// Default constructor
 	/// </summary>
-	body() : _name("NULL"), _centre(point3(0, 0, 0)), _radius(0), _mass(0), _velocity(vel3(0, 0, 0)) {}
+	body() : _name("NULL"), _centre(point3(0, 0, 0)), _radius(0), _mass(0), _velocity(vel3(0, 0, 0)), _include(true) {}
 
 	/// <summary>
 	/// Modified constructor
@@ -46,7 +63,7 @@ public:
 	/// <param name="r">Radius of body</param>
 	/// <param name="m">Mass of body</param>
 	/// <param name="vel">Velocity of body in 3D vector form</param>
-	body(const std::string name, point3 centre, const double r, const double m, vel3 vel) : _name(name), _centre(centre), _radius(r), _mass(m), _velocity(vel) {}
+	body(const std::string name, point3 centre, double r, double m, vel3 vel) : _name(name), _centre(centre), _radius(r), _mass(m), _velocity(vel), _include(true) {}
 
 	/// <summary>
 	/// Destructor
@@ -67,6 +84,7 @@ public:
 	vel3	vel()		const { return _velocity; } // Get velocity
 	double	radius()	const { return _radius; } // Get radius
 	double	mass()		const { return _mass; } // Get mass
+	bool	inlude()	const { return _include; } // Get include flag
 
 	/*********************************************************
 	Setters
@@ -80,7 +98,6 @@ public:
 	void vz(double vz) { _velocity[2] = std::move(vz); } // Set Z vel
 	void vel(vel3 vel) { _velocity = std::move(vel); } // Set velocity
 
-
 	/*********************************************************
 	Method for computating acceleration
 	*********************************************************/
@@ -93,17 +110,16 @@ public:
 	/// <param name="az">Acceleration in the z direction</param>
 	/// <returns>The error code. See error.h for more info</returns>
 	int compute_acceleration(point3 pos, double& ax, double& ay, double& az) {
-		if (pos.length() == 0) return ERR_BODIES_COLLIDED;	// If the distance between two bodies is 0 then they must have collided
-															// TODO: If bodies collided delete body from list
-		ax += (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (-pos.x() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)));
-		ay += (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (-pos.y() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)));
-		az += (grav_constant * _mass) / (pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (-pos.z() / sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)));
+		ax += (grav_constant * _mass * pos.x()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
+		ay += (grav_constant * _mass * pos.y()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
+		az += (grav_constant * _mass * pos.z()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
 
+		// if the acceleration applied on a body is NaN return an error
 		if (ax != ax) return ERR_AX_NAN;
 		if (ay != ay) return ERR_AY_NAN;
 		if (az != az) return ERR_AZ_NAN;
 		return NO_ERROR;
-	}
+	} // end compute_acceleration
 
 	/*********************************************************
 	Numerical methods - functions defined in body.cpp

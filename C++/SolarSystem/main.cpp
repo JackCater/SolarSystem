@@ -6,7 +6,7 @@
 #include "universe.h"
 #include "output.h"
 
-
+// Planets
 body sun("Sun", point3(0.0, 0.0, 0.0), solar_radius, solar_mass, vel3(0.0, 0.0, 0.0));
 body mercury("Mercury", point3(-46000000000.0, 0.0, 0.0), mercury_radius, mercury_mass, vel3(0.0, -58980.0, 0.0));
 body venus("Venus", point3(-107480000000.0, 0.0, 0.0), venus_radius, venus_mass, vel3(0.0, -35260.0, 0.0));
@@ -19,15 +19,18 @@ body neptune("Neptune", point3(-4444450000000.0, 0.0, 0.0), neptune_radius, nept
 // body pluto()
 
 // Three body problem solution
-body x0("Body1", point3(-0.970, 0.243, 0.0), 1, 1, vel3(-0.466, -0.433, 0.0));
-body x1("Body2", point3(0.970, -0.243, 0.0), 1, 1, vel3(-0.466, -0.433, 0.0));
-body x2("Body3", point3(0.0, 0.0, 0.0), 1, 1, vel3(2.0*0.466, 2.0*0.433, 0.0));
+body x0("Body1", point3(-0.970, 0.243, 0.0), 0.1, 1, vel3(-0.466, -0.433, 0.0));
+body x1("Body2", point3(0.970, -0.243, 0.0), 0.1, 1, vel3(-0.466, -0.433, 0.0));
+body x2("Body3", point3(0.0, 0.0, 0.0), 0.1, 1, vel3(2.0*0.466, 2.0*0.433, 0.0));
 
 // Test
 body v0("Body1", point3(0.0, 0.0, 0.0), 0.05, 0.25, vel3(0.0, 0.0, 0.0));
 body v1("Body2", point3(2.0, 2.0, 2.0), 0.05, 0.25, vel3(0.0, 0.0, 0.0));
 body v2("Body3", point3(5.0, 5.0, 5.0), 0.1, 0.25, vel3(0.0, 0.1, 0.0));
-body v3("Body4", point3(3.0, 3.0, 3.0), 0.1, 0.25, vel3(0.0, 0.0, 0.0));
+body v3("Body4", point3(3.0, 3.0, 3.0), 0.05, 0.25, vel3(0.0, 0.0, 0.0));
+body v4("Body5", point3(-4.0, 2.0, 0.0), 0.1, 0.25, vel3(-0.1, 0.5, 0.0));
+body v5("Body6", point3(6.0, 10.0, 0.0), 0.1, 0.25, vel3(0.2, -0.5, 0.0));
+body v6("Body7", point3(-2.0, 7.0, 3.0), 0.1, 0.25, vel3(0.0, 0.0, 0.0));
 
 data_collection collection(1000, 1.0);
 
@@ -45,16 +48,19 @@ universe create_universe(void) {
     u.add(&saturn);
     u.add(&uranus);
     u.add(&neptune);
-    
+    */
     u.add(&x0);
     u.add(&x1);
     u.add(&x2);
-    */
+    /*
     u.add(&v0);
     u.add(&v1);
     u.add(&v2);
     u.add(&v3);
-
+    u.add(&v4);
+    u.add(&v5);
+    u.add(&v6);
+    */
     return u;
 }
 
@@ -80,29 +86,29 @@ int main(int argc, char* argv[]) {
 
     universe u = create_universe();
 
-    file_ << "NUM_BODIES\n" << u.num_of_bodies() <<"\n";
+    file_ << "NUM_BODIES\n" << u.num_of_bodies <<"\n";
     file_ << "\nNUM_STEPS\n" << final_time / dt << "\n";
     file_ << "\nNAMES\n";
-    for (auto i = 0; i < u.num_of_bodies(); i++)
-        file_ << u.body_at(i)->name() << "\n";    
+    for (auto i = 0; i < u.num_of_bodies; i++)
+        file_ << u.body_at(i)->name << "\n";    
     
     file_ << "\nMASSES\n";
-    for (auto i = 0; i < u.num_of_bodies(); i++)
-        file_ << u.body_at(i)->mass() << "\n";    
+    for (auto i = 0; i < u.num_of_bodies; i++)
+        file_ << u.body_at(i)->mass << "\n";    
     
     file_ << "\nRADII\n";
-    for (auto i = 0; i < u.num_of_bodies(); i++)
-        file_ << u.body_at(i)->radius() << "\n";
+    for (auto i = 0; i < u.num_of_bodies; i++)
+        file_ << u.body_at(i)->radius << "\n";
 
     file_ << "\nTRAJECTORIES\n";
     file_ << "Step No,";
-    for (auto i = 0; i < u.num_of_bodies(); i++) {
-        file_ << u.body_at(i)->name() <<"x" << ",";
-        file_ << u.body_at(i)->name() <<"y" << ",";
-        file_ << u.body_at(i)->name() <<"z" << ",";
-        file_ << u.body_at(i)->name() <<"vx" << ",";
-        file_ << u.body_at(i)->name() <<"vy" << ",";
-        file_ << u.body_at(i)->name() <<"vz" << ",";
+    for (auto i = 0; i < u.num_of_bodies; i++) {
+        file_ << u.body_at(i)->name <<"x" << ",";
+        file_ << u.body_at(i)->name <<"y" << ",";
+        file_ << u.body_at(i)->name <<"z" << ",";
+        file_ << u.body_at(i)->name <<"vx" << ",";
+        file_ << u.body_at(i)->name <<"vy" << ",";
+        file_ << u.body_at(i)->name <<"vz" << ",";
     }
     file_ << "\n";
     while (time < final_time) {

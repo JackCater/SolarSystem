@@ -73,30 +73,46 @@ public:
 	/*********************************************************
 	Getters
 	*********************************************************/
-	std::string name()	const { return _name; } // Get name of body
-	double	x()			const { return _centre.x(); } // Get X pos
-	double	y()			const { return _centre.y(); } // Get Y pos
-	double	z()			const { return _centre.z(); } // Get Z pos
-	point3	pos()		const { return _centre; } // Get position
-	double	vx()		const { return _velocity.x(); } // Get X vel
-	double	vy()		const { return _velocity.y(); } // Get Y vel
-	double	vz()		const { return _velocity.z(); } // Get Z vel
-	vel3	vel()		const { return _velocity; } // Get velocity
-	double	radius()	const { return _radius; } // Get radius
-	double	mass()		const { return _mass; } // Get mass
-	bool	inlude()	const { return _include; } // Get include flag
+	std::string get_name()	const { return _name; } // Get name of body
+	double	get_x()			const { return _centre.x(); } // Get X pos
+	double	get_y()			const { return _centre.y(); } // Get Y pos
+	double	get_z()			const { return _centre.z(); } // Get Z pos
+	point3	get_pos()		const { return _centre; } // Get position
+	double	get_vx()		const { return _velocity.x(); } // Get X vel
+	double	get_vy()		const { return _velocity.y(); } // Get Y vel
+	double	get_vz()		const { return _velocity.z(); } // Get Z vel
+	vel3	get_vel()		const { return _velocity; } // Get velocity
+	double	get_radius()	const { return _radius; } // Get radius
+	double	get_mass()		const { return _mass; } // Get mass
+	bool	get_inlude()	const { return _include; } // Get include flag
 
 	/*********************************************************
 	Setters
 	*********************************************************/
-	void x(double x) { _centre[0] = std::move(x); } // Set X pos
-	void y(double y) { _centre[1] = std::move(y); } // Set Y pos
-	void z(double z) { _centre[2] = std::move(z); } // Set Z pos
-	void pos(point3 position) { _centre = std::move(position); } // Set Position
-	void vx(double vx) { _velocity[0] = std::move(vx); } // Set X vel
-	void vy(double vy) { _velocity[1] = std::move(vy); } // Set Y vel
-	void vz(double vz) { _velocity[2] = std::move(vz); } // Set Z vel
-	void vel(vel3 vel) { _velocity = std::move(vel); } // Set velocity
+	void set_x(double x) { _centre[0] = std::move(x); } // Set X pos
+	void set_y(double y) { _centre[1] = std::move(y); } // Set Y pos
+	void set_z(double z) { _centre[2] = std::move(z); } // Set Z pos
+	void set_pos(point3 position) { _centre = std::move(position); } // Set Position
+	void set_vx(double vx) { _velocity[0] = std::move(vx); } // Set X vel
+	void set_vy(double vy) { _velocity[1] = std::move(vy); } // Set Y vel
+	void set_vz(double vz) { _velocity[2] = std::move(vz); } // Set Z vel
+	void set_vel(vel3 vel) { _velocity = std::move(vel); } // Set velocity
+														   
+	/*********************************************************
+	Property definitions (For C# style properties)
+	*********************************************************/
+	__declspec(property(get = get_name)) std::string name;			// Name
+	__declspec(property(get = get_x, put = set_x)) double x;		// X
+	__declspec(property(get = get_y, put = set_y)) double y;		// Y
+	__declspec(property(get = get_z, put = set_z)) double z;		// Z
+	__declspec(property(get = get_pos, put = set_pos)) point3 pos;	// Position
+	__declspec(property(get = get_vx, put = set_vx)) double vx;		// Vx
+	__declspec(property(get = get_vy, put = set_vy)) double vy;		// Vy
+	__declspec(property(get = get_vz, put = set_vz)) double vz;		// Vz
+	__declspec(property(get = get_vec, put = set_vel)) vel3 vel;	// Veloclity
+	__declspec(property(get = get_radius)) double radius;			// Radius
+	__declspec(property(get = get_mass)) double mass;				// Mass
+	__declspec(property(get = get_inlude)) bool include;			// Include flag
 
 	/*********************************************************
 	Method for computating acceleration

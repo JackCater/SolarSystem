@@ -56,8 +56,13 @@ public:
 	/*********************************************************
 	Getters
 	*********************************************************/
-	unsigned __int64 num_of_bodies() const { return objects.size(); } // Get the number of bodies in the vector list
+	unsigned __int64 get_num_of_bodies() const { return objects.size(); } // Get the number of bodies in the vector list
 	body* body_at(int i) const { return objects.at(i); } // Get the body at i in the vector list
+
+	/*********************************************************
+	Property definitions (For C# style properties)
+	*********************************************************/
+	__declspec(property(get = get_num_of_bodies)) unsigned __int64 num_of_bodies;	// Number of bodies in universe
 
 	/*********************************************************
 	Methods for computation
@@ -92,10 +97,10 @@ public:
 		if (u == nullptr) return ERR_UNIVERSE_NULLPTR;
 
 		// If there are no bodies in the universe return an error
-		if (u->num_of_bodies() == 0) return ERR_NO_BODY_IN_UNIVERSE;
+		if (u->num_of_bodies == 0) return ERR_NO_BODY_IN_UNIVERSE;
 
 		// If a body in the universe is a nullptr return error
-		for (auto i = 0; i < u->num_of_bodies(); i++)
+		for (auto i = 0; i < u->num_of_bodies; i++)
 			if (u->body_at(i) == nullptr) return ERR_BODY_NULLPTR;
 
 		// For every body in the universe compute the force felt by all other bodies
@@ -136,10 +141,10 @@ public:
 		if (u == nullptr) return ERR_UNIVERSE_NULLPTR;
 
 		// If there are no bodies in the universe return an error
-		if (u->num_of_bodies() == 0) return ERR_NO_BODY_IN_UNIVERSE;
+		if (u->num_of_bodies == 0) return ERR_NO_BODY_IN_UNIVERSE;
 
 		// If a body in the universe is a nullptr return error
-		for (auto i = 0; i < u->num_of_bodies(); i++)
+		for (auto i = 0; i < u->num_of_bodies; i++)
 			if (u->body_at(i) == nullptr) return ERR_BODY_NULLPTR;
 
 		// For every body in the universe compute the force felt by all other bodies

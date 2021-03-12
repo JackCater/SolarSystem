@@ -16,6 +16,18 @@
 class universe;
 
 /// <summary>
+/// A struct containing the rkf45 variables used to compute the rkf4, rkf5 and rkf45 methods
+/// </summary>
+struct rkf45_variables {
+	double k1x, k1y, k1z, k1vx, k1vy, k1vz; 
+	double k2x, k2y, k2z, k2vx, k2vy, k2vz;
+	double k3x, k3y, k3z, k3vx, k3vy, k3vz;
+	double k4x, k4y, k4z, k4vx, k4vy, k4vz;
+	double k5x, k5y, k5z, k5vx, k5vy, k5vz;
+	double k6x, k6y, k6z, k6vx, k6vy, k6vz;
+}; // end rkf45_variables
+
+/// <summary>
 /// A class containing methods and functions for a body in space
 /// </summary>
 class body {
@@ -34,6 +46,38 @@ private:
 	/*********************************************************
 	Private functions
 	*********************************************************/
+	/// <summary>
+	/// Checks to see if an error has been caused during computation
+	/// </summary>
+	/// <param name="acting_force">The acting_force</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int error_check(body* acting_force);
+
+	/// <summary>
+	/// Checks to see if an error has been caused during computation
+	/// </summary>
+	/// <param name="universe">The universe</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int error_check(universe* universe);
+
+	/// <summary>
+	/// Computes the rk45 variables which are passed by reference
+	/// </summary>
+	/// <param name="acting_force">The acting force</param>
+	/// <param name="variables">The rk45_variable struct</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int compute_rkf45_variables(body* acting_force, rkf45_variables& variables, double dt);
+
+	/// <summary>
+	/// Computes the rk45 variables which are passed by reference
+	/// </summary>
+	/// <param name="universe">The universe</param>
+	/// <param name="variables">The rk45_variable struct</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int compute_rkf45_variables(universe* universe, rkf45_variables& variables, double dt);
+
 	/// <summary>
 	/// Sets the member variables of a body to 0
 	/// Used when two bodies collide
@@ -118,7 +162,7 @@ public:
 	Method for computating acceleration
 	*********************************************************/
 	/// <summary>
-	/// Computes the accleration on a body from one other body
+	/// Computes the accleration on a body from one other body using Newtonian Physics
 	/// </summary>
 	/// <param name="pos">Distance between the two bodies</param>
 	/// <param name="ax">Acceleration in the x direction</param>
@@ -138,7 +182,7 @@ public:
 	} // end compute_acceleration
 
 	/*********************************************************
-	Numerical methods - functions defined in body.cpp
+	Numerical methods - functions defined in body.cpp!!
 	*********************************************************/
 	/// <summary>
 	/// Computes one step using the Euler method
@@ -160,23 +204,76 @@ public:
 	int step_euler(universe* u, double dt);
 
 	/// <summary>
-	/// Computes one step using the Runge Kutta method
+	/// Computes one step using the Runge Kutta fourth order method
 	/// NOTE: This method uses ONE body in the computation
 	/// So usually thr star is input at the acting force
 	/// </summary>
 	/// <param name="acting_force">The acting force, usually the star</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_runge_kutta(body* acting_force, double dt);
+	int step_rk4(body* acting_force, double dt);
 
 	/// <summary>
-	/// Computes one step using the Runge kutta method
+	/// Computes one step using the Runge kutta fourth order method
 	/// and uses all bodies in the universe
 	/// </summary>
 	/// <param name="universe">The universe</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_runge_kutta(universe* universe, double dt);
-};
+	int step_rk4(universe* universe, double dt);
+
+	/// <summary>
+	/// Computes one step using the Runge Kutta Fehlberg fourth order method
+	/// NOTE: This method uses ONE body in the computation
+	/// So usually thr star is input at the acting force
+	/// </summary>
+	/// <param name="acting_force">The acting force, usually the star</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf4(body* acting_force, double dt);
+
+	/// <summary>
+	/// Computes one step using the Runge Kutta Fehlberg fourth order method
+	/// and uses all bodies in the universe
+	/// </summary>
+	/// <param name="universe">The universe object</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf4(universe* universe, double dt);
+	
+	/// <summary>
+	/// Computes one step using the Runge Kutta Fehlberg fifth order method
+	/// NOTE: This method uses ONE body in the computation
+	/// So usually the star is input at the acting force
+	/// </summary>
+	/// <param name="acting_force">The acting force, usually the star</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf5(body* acting_force, double dt);
+
+	/// <summary>
+	/// Computes one step using the Runge Kutta Fehlberg fourth order method
+	/// and uses all bodies in the universe
+	/// </summary>
+	/// <param name="universe">The universe object</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf5(universe* universe, double dt);
+	
+
+	/*********************************************************
+	Numerical methods for adaptive time step
+	Functions defined in adaptive_method.cpp!!
+	*********************************************************/	
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name=""></param>
+	/// <param name="tolerance"></param>
+	/// <param name="dt"></param>
+	/// <returns></returns>
+	int step_adaptive_method(body* acting_force, double tolerance, double& dt);
+	int step_adaptive_method(universe* universe, double tolerance, double& scalar,  double& dt);
+}; // end class body
 
 #endif // BODY_H

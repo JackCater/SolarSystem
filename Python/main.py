@@ -136,7 +136,7 @@ class plot_traj:
 
         # Create body and line object for each planet/star
         for bodies in range(len(self.names)):
-            body_obj, = self.ax.plot([], [], [], colour_list[bodies], marker="o", markersize=50 * self.radii[bodies], lw=1)
+            body_obj, = self.ax.plot([], [], [], colour_list[bodies], marker="o", lw=1)
             # If tail keyword is true create tails of bodies
             #if self.tail:
             line_obj, = self.ax.plot([], [], [], colour_list[bodies])
@@ -191,5 +191,5 @@ class plot_traj:
         anim.save(f, writer='PillowWriter', fps=30)
 
 if __name__ == "__main__":
-    planets = plot_traj("three_body_solution.csv",10,10,10, rotate=True, show_anim=True, axes_text=False)
+    planets = plot_traj("rkf4_test.csv", rotate=False, show_anim=True)
     plot_traj.animate(planets, r"C://Users/Jcater/source/repos/SolarSystem/Python/test3.gif")

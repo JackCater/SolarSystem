@@ -33,7 +33,7 @@ class plot_traj:
             if x.startswith('NUM_BODIES'):
                 self.number_of_bodies = int(f.readline())
             if x.startswith('NUM_STEPS'):
-                self.number_of_steps = int(f.readline())
+                self.number_of_steps = int(f.readline().strip('\n'))
             if x.startswith('NAMES'):
                 i = 0
                 while i < self.number_of_bodies:
@@ -56,7 +56,7 @@ class plot_traj:
         f.close()
 
         # Open dataframe to the trajectories information
-        self.df = pd.read_csv(self.filename, skip_blank_lines=True, skiprows=3 * self.number_of_bodies + 13)
+        self.df = pd.read_csv(self.filename, skiprows=3 * self.number_of_bodies + 10)
         # Remove the two unnecessary columns (could be done in C++)
         # Unnamed: creates a column called 'Unnamed: n' where n is the number of bodies * 6 + 1
         self.df = self.df.drop(columns=['Step No', 'Unnamed: ' + str(self.number_of_bodies * 6 + 1)])
@@ -157,5 +157,5 @@ class plot_traj:
             anim.save(f, writer='PillowWriter', fps=30)
 
 if __name__ == "__main__":
-    planets = plot_traj("rkf45_solar_system_test_1.csv", show_anim=True)
+    planets = plot_traj("Test1.csv", show_anim=True)
     plot_traj.animate(planets, r"C://Users/Jcater/source/repos/SolarSystem/Python/test3.gif")

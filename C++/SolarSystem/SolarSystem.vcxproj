@@ -140,7 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="adaptive_method.cpp" />
     <ClCompile Include="body.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

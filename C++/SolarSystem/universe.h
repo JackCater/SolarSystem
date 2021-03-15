@@ -246,15 +246,17 @@ public:
 	/// for all planets in the universe but with only ONE body being the acting force
 	/// </summary>
 	/// <param name="acting_force">The body being the acting force, usually a star</param>
-	/// <param name="dt">The time step</param>
+	/// <param name="dt">The time step, for the adaptive method this needs to be passed by reference</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rkf45(body* acting_force, double tol, double dt) {
+	int step_rkf45(body* acting_force, double tol, double& dt) {
+		// If there is no acting force return an error
 		if (acting_force == nullptr) return ERR_BODY_NULLPTR;
-		for (const auto& object : objects) {
-			int retval = object->step_adaptive_method(acting_force, tol, dt);
-			if (retval != NO_ERROR) return retval;
-		} // end for			
 
+		for (const auto& object : objects) {
+			int retval = object->step_rkf45(acting_force, tol, dt);
+			if (retval != NO_ERROR) return retval;
+		} // end for	
+		
 		return NO_ERROR; 
 	} // end step_rkf45
 
@@ -263,7 +265,7 @@ public:
 	/// for all planets in the universe with all bodies acting as a force
 	/// </summary>
 	/// <param name="u">The universe</param>
-	/// <param name="dt">The time step</param>
+	/// <param name="dt">The time step, for the adaptive method this needs to be passed by reference</param>
 	/// <returns>The error code. See error.h for more info</returns>
 	int step_rkf45(universe* u, double tol, double& dt) { 
 		// If the universe does not exist return error
@@ -276,15 +278,11 @@ public:
 		for (auto i = 0; i < u->num_of_bodies; i++)
 			if (u->body_at(i) == nullptr) return ERR_BODY_NULLPTR;
 
-		// Init scalar
-		double s = 0.0;
-
 		// For every body in the universe compute the force felt by all other bodies
 		for (const auto& object : objects) {
-			int retval = object->step_adaptive_method(u, tol, s, dt);
+			int retval = object->step_rkf45(u, tol, dt);
 			if (retval != NO_ERROR) return retval;
 		} // end for
-		dt = s * dt;
 
 		return NO_ERROR; 
 	} // end step_rkf45

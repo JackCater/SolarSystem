@@ -37,5 +37,14 @@ enum CALCULATION_ERRORS : short {
 	ERR_OUTSIDE_TOL = 0x10, // The value is outside of the tolerance
 };
 
+/// <summary>
+/// Time step errors. Whilst not technically errors
+/// helps with the adaptive step functions
+/// </summary>
+enum TIMESTEP_ERRORS : short {
+	ERR_DT_TOO_BIG = 0xFF, // Time step is too large
+	ERR_DT_TO_SMALL = 0xFE, // Time step it soo small
+};
+
 
 #endif

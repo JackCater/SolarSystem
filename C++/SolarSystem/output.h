@@ -6,8 +6,40 @@
 
 #include"universe.h"
 
-void output(double step_number, universe u, std::ofstream& ofile)
-{
+void output_number_of_steps(int step_no, std::ofstream& ofile) {
+    ofile << "\nNUM_STEPS\n" << step_no;
+    return;
+} // end output_number_of_steps
+
+void output_preamble(universe u, std::ostream& ofile) {
+    ofile << "NUM_BODIES\n" << u.num_of_bodies << "\n";
+    ofile << "\nNAMES\n";
+    for (auto i = 0; i < u.num_of_bodies; i++)
+        ofile << u.body_at(i)->name << "\n";
+
+    ofile << "\nMASSES\n";
+    for (auto i = 0; i < u.num_of_bodies; i++)
+        ofile << u.body_at(i)->mass << "\n";
+
+    ofile << "\nRADII\n";
+    for (auto i = 0; i < u.num_of_bodies; i++)
+        ofile << u.body_at(i)->radius << "\n";
+
+    ofile << "\nTRAJECTORIES\n";
+    ofile << "Step No,";
+    for (auto i = 0; i < u.num_of_bodies; i++) {
+        ofile << u.body_at(i)->name << "x" << ",";
+        ofile << u.body_at(i)->name << "y" << ",";
+        ofile << u.body_at(i)->name << "z" << ",";
+        ofile << u.body_at(i)->name << "vx" << ",";
+        ofile << u.body_at(i)->name << "vy" << ",";
+        ofile << u.body_at(i)->name << "vz" << ",";
+    } // end for
+    ofile << "\n";
+    return;
+} // end output_preamble
+
+void output(double step_number, universe u, std::ofstream& ofile) {
     ofile << std::setiosflags(std::ios::showpoint | std::ios::uppercase);
     ofile << std::setprecision(8) << step_number << " ";
     for (int i = 0; i < u.num_of_bodies; i++)
@@ -22,8 +54,7 @@ void output(double step_number, universe u, std::ofstream& ofile)
     ofile << std::endl;
 }  // end output
 
-void output(double step_number, universe u, std::ofstream& ofile, const char* seperator)
-{
+void output(double step_number, universe u, std::ofstream& ofile, const char* seperator) {
     ofile << std::setiosflags(std::ios::showpoint | std::ios::uppercase);
     ofile << std::setprecision(8) << step_number << seperator;
     for (int i = 0; i < u.num_of_bodies; i++)
@@ -38,8 +69,7 @@ void output(double step_number, universe u, std::ofstream& ofile, const char* se
     ofile << std::endl;
 }  // end output
 
-void output_no_whitespace(double step_number, universe u, std::ofstream& ofile, const char* seperator)
-{
+void output_no_whitespace(double step_number, universe u, std::ofstream& ofile, const char* seperator) {
     ofile << std::setiosflags(std::ios::showpoint | std::ios::uppercase);
     ofile << std::setprecision(8) << step_number << seperator;
     for (int i = 0; i < u.num_of_bodies; i++)
@@ -55,8 +85,7 @@ void output_no_whitespace(double step_number, universe u, std::ofstream& ofile, 
 }  // end output
 
 
-void output(double step_number, body b, std::ofstream& ofile)
-{
+void output(double step_number, body b, std::ofstream& ofile) {
     ofile << std::setiosflags(std::ios::showpoint | std::ios::uppercase);
     ofile << std::setw(15) << std::setprecision(8) << step_number << " ";
     ofile << std::setw(15) << std::setprecision(8) << b.x << " ";
@@ -68,8 +97,7 @@ void output(double step_number, body b, std::ofstream& ofile)
     ofile << std::endl;
 }  // end output
 
-void output(double step_number, body b, std::ofstream& ofile, const char* seperator)
-{
+void output(double step_number, body b, std::ofstream& ofile, const char* seperator) {
     ofile << std::setiosflags(std::ios::showpoint | std::ios::uppercase);
     ofile << std::setw(15) << std::setprecision(8) << step_number << seperator;
     ofile << std::setw(15) << std::setprecision(8) << b.x << seperator;

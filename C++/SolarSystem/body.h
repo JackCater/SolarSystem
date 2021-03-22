@@ -7,6 +7,7 @@
 #define BODY_H
 
 #include <string>
+#include <vector>
 
 #include "vec3.h"
 #include "utility.h"
@@ -15,11 +16,33 @@
 // Forward decleration of universe class
 class universe;
 
+#pragma region data structs
+/// <summary>
+/// A struct containing the rkf45 variables used to compute the rkf4, rkf5 and rkf45 methods
+/// </summary>
+struct rkf45_variables {
+	double k1x, k1y, k1z, k1vx, k1vy, k1vz; 
+	double k2x, k2y, k2z, k2vx, k2vy, k2vz;
+	double k3x, k3y, k3z, k3vx, k3vy, k3vz;
+	double k4x, k4y, k4z, k4vx, k4vy, k4vz;
+	double k5x, k5y, k5z, k5vx, k5vy, k5vz;
+	double k6x, k6y, k6z, k6vx, k6vy, k6vz;
+}; // end rkf45_variables
+
+/// <summary>
+/// A struct containing the position and velocity parameters
+/// </summary>
+struct pos_vel_params {
+	double x, y, z, vx, vy, vz;
+};
+#pragma endregion
+
 /// <summary>
 /// A class containing methods and functions for a body in space
 /// </summary>
 class body {
 private:
+#pragma region member variables
 	/*********************************************************
 	Member variables
 	*********************************************************/
@@ -30,23 +53,83 @@ private:
 	vel3 _velocity;				// Velocity of star/planet (vx, vy, vz)
 	bool _include;				// Flag to determine whether the body should be included in the simulation
 								// By default this is true
-	
+#pragma endregion
+
+#pragma region private functions
 	/*********************************************************
-	Private functions
+	Private functions - defined in body.cpp!!
 	*********************************************************/
+	/// <summary>
+	/// Computes the accleration on a body from one other body using Newtonian Physics
+	/// </summary>
+	/// <param name="pos">Distance between the two bodies</param>
+	/// <param name="ax">Acceleration in the x direction</param>
+	/// <param name="ay">Acceleration in the y direction</param>
+	/// <param name="az">Acceleration in the z direction</param>
+	/// <returns>The error code. See error.h for more info</returns>
+	int compute_acceleration(point3 pos, double& ax, double& ay, double& az);
+
+	/// <summary>
+	/// Checks to see if an error has been caused during computation
+	/// </summary>
+	/// <param name="acting_force">The acting_force</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int error_check(body* acting_force);
+
+	/// <summary>
+	/// Checks to see if an error has been caused during computation
+	/// </summary>
+	/// <param name="universe">The universe</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int error_check(universe* universe);
+
+	/// <summary>
+	/// Computes the rk45 variables which are passed by reference
+	/// </summary>
+	/// <param name="acting_force">The acting force</param>
+	/// <param name="variables">The rk45_variable struct</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int compute_rkf45_variables(body* acting_force, rkf45_variables& variables, double dt);
+
+	/// <summary>
+	/// Computes the rk45 variables which are passed by reference
+	/// </summary>
+	/// <param name="universe">The universe</param>
+	/// <param name="variables">The rk45_variable struct</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int compute_rkf45_variables(universe* universe, rkf45_variables& variables, double dt);
+
+	/// <summary>
+	/// Calculates the RKF4 and RKF5 parameters and the errrors between the two
+	/// </summary>
+	/// <param name="acting_force">The acting force</param>
+	/// <param name="error">The error between RKF4 and RKF5. Passed by ref</param>
+	/// <param name="dt">The time step</param>
+	/// <param name="params">The RKF5 position and velocity parameter</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_adaptive_method(body* acting_force, double& error, double dt, pos_vel_params& params);
+
+	/// <summary>
+	/// Calculates the RKF4 and RKF5 parameters and the errrors between the two
+	/// </summary>
+	/// <param name="universe">The universe</param>
+	/// <param name="error">The error between RKF4 and RKF5. Passed by ref</param>
+	/// <param name="dt">The time step</param>
+	/// <param name="params">The RKF5 position and velocity parameter</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_adaptive_method(universe* universe, double& error, double dt, pos_vel_params& params);
+
 	/// <summary>
 	/// Sets the member variables of a body to 0
 	/// Used when two bodies collide
 	/// </summary>
-	void set_to_zero() {
-		this->_mass = 0;
-		this->_radius = 0;
-		this->_velocity = vel3(0.0, 0.0, 0.0);
-		this->_include = false; // Body will no longer be included in computations
-		return;
-	} // end set_to_zero
+	void set_to_zero();
+#pragma endregion
 
 public:
+#pragma region constructors and destructors
 	/*********************************************************
 	Constructors and destructors
 	*********************************************************/
@@ -69,7 +152,9 @@ public:
 	/// Destructor
 	/// </summary>
 	~body() {}; // Destructor
+#pragma endregion
 
+#pragma region getters, setters and properties
 	/*********************************************************
 	Getters
 	*********************************************************/
@@ -113,33 +198,19 @@ public:
 	__declspec(property(get = get_radius)) double radius;			// Radius
 	__declspec(property(get = get_mass)) double mass;				// Mass
 	__declspec(property(get = get_inlude)) bool include;			// Include flag
+#pragma endregion
 
+#pragma region numerical methods
 	/*********************************************************
-	Method for computating acceleration
+	Numerical methods - functions defined in body.cpp!!
 	*********************************************************/
 	/// <summary>
-	/// Computes the accleration on a body from one other body
+	/// Updates the velocity and position parameters of the object
 	/// </summary>
-	/// <param name="pos">Distance between the two bodies</param>
-	/// <param name="ax">Acceleration in the x direction</param>
-	/// <param name="ay">Acceleration in the y direction</param>
-	/// <param name="az">Acceleration in the z direction</param>
-	/// <returns>The error code. See error.h for more info</returns>
-	int compute_acceleration(point3 pos, double& ax, double& ay, double& az) {
-		ax += (grav_constant * _mass * pos.x()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
-		ay += (grav_constant * _mass * pos.y()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
-		az += (grav_constant * _mass * pos.z()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
+	/// <param name="params">The position and velocity parameter struct</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int update_params(pos_vel_params params);
 
-		// if the acceleration applied on a body is NaN return an error
-		if (ax != ax) return ERR_AX_NAN;
-		if (ay != ay) return ERR_AY_NAN;
-		if (az != az) return ERR_AZ_NAN;
-		return NO_ERROR;
-	} // end compute_acceleration
-
-	/*********************************************************
-	Numerical methods - functions defined in body.cpp
-	*********************************************************/
 	/// <summary>
 	/// Computes one step using the Euler method
 	/// NOTE: This method only uses ONE body in the computation
@@ -160,23 +231,80 @@ public:
 	int step_euler(universe* u, double dt);
 
 	/// <summary>
-	/// Computes one step using the Runge Kutta method
+	/// Computes one step using the Runge Kutta fourth order method
 	/// NOTE: This method uses ONE body in the computation
-	/// So usually thr star is input at the acting force
+	/// so usually the star is input at the acting force
 	/// </summary>
 	/// <param name="acting_force">The acting force, usually the star</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_runge_kutta(body* acting_force, double dt);
+	int step_rk4(body* acting_force, double dt);
 
 	/// <summary>
-	/// Computes one step using the Runge kutta method
+	/// Computes one step using the Runge kutta fourth order method
 	/// and uses all bodies in the universe
 	/// </summary>
 	/// <param name="universe">The universe</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_runge_kutta(universe* universe, double dt);
-};
+	int step_rk4(universe* universe, double dt);
+
+	/// <summary>
+	/// Computes one step using the Runge Kutta Fehlberg fourth order method
+	/// NOTE: This method uses ONE body in the computation
+	/// So usually thr star is input at the acting force
+	/// </summary>
+	/// <param name="acting_force">The acting force, usually the star</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf4(body* acting_force, double dt);
+
+	/// <summary>
+	/// Computes one step using the Runge Kutta Fehlberg fourth order method
+	/// and uses all bodies in the universe
+	/// </summary>
+	/// <param name="universe">The universe object</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf4(universe* universe, double dt);
+	
+	/// <summary>
+	/// Computes one step using the Runge Kutta Fehlberg fifth order method
+	/// NOTE: This method uses ONE body in the computation
+	/// So usually the star is input at the acting force
+	/// </summary>
+	/// <param name="acting_force">The acting force, usually the star</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf5(body* acting_force, double dt);
+
+	/// <summary>
+	/// Computes one step using the Runge Kutta Fehlberg fourth order method
+	/// and uses all bodies in the universe
+	/// </summary>
+	/// <param name="universe">The universe object</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf5(universe* universe, double dt);
+	
+	/// <summary>
+	/// Computes one step using the adaptive time step function
+	/// </summary>
+	/// <param name="acting_force">The acting force, usually the star</param>
+	/// <param name="tolerance">The tolerance to allow the step to pass</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf45(body* acting_force, double tol, double& dt);
+	
+	/// <summary>
+	/// Computes one step using the adaptive time step function
+	/// </summary>
+	/// <param name="universe">The universe object</param>
+	/// <param name="tol">The acceptable tolerance to allow the step to pass</param>
+	/// <param name="dt">The time step</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf45(universe* universe, double tol, double& error, double& dt, pos_vel_params& params);
+}; // end class body
+#pragma endregion
 
 #endif // BODY_H

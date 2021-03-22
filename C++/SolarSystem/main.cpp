@@ -10,7 +10,7 @@
 body sun("Sun", point3(0.0, 0.0, 0.0), solar_radius, solar_mass, vel3(0.0, 0.0, 0.0));
 body mercury("Mercury", point3(-46000000000.0, 0.0, 0.0), mercury_radius, mercury_mass, vel3(0.0, -58980.0, 0.0));
 body venus("Venus", point3(-107480000000.0, 0.0, 0.0), venus_radius, venus_mass, vel3(0.0, -35260.0, 0.0));
-body earth("Earth", point3(-147095000000.0, 0.0, 0.0), earth_radius, earth_mass, vel3(0.0, -30300.0, 0.0));
+body earth("Earth", point3(-aphelion_distance, 0.0, 0.0), earth_radius, earth_mass, vel3(0.0, -aphelion_velocity, 0.0));
 body mars("Mars", point3(-206620000000.0, 0.0, 0.0), mars_radius, mars_mass, vel3(0.0, -26500.0, 0.0));
 body jupiter("Jupiter", point3(-740520000000.0, 0.0, 0.0), jupiter_radius, jupiter_mass, vel3(0.0, -13720.0, 0.0));
 body saturn("Saturn", point3(-1352550000000.0, 0.0, 0.0), saturn_radius, saturn_mass, vel3(0.0, -10180.0, 0.0));
@@ -36,31 +36,32 @@ data_collection collection(1000, 1.0);
 
 std::ofstream file_;
 
-universe create_universe(void) {
+universe create_solar_system(void) {
     universe u;
-    /*
     u.add(&sun);
     u.add(&mercury);
     u.add(&venus);
     u.add(&earth);
     u.add(&mars);
-    u.add(&jupiter);
-    u.add(&saturn);
-    u.add(&uranus);
-    u.add(&neptune);
-    */
+    //u.add(&jupiter);
+    //u.add(&saturn);
+    //u.add(&uranus);
+    //u.add(&neptune);
+    return u;
+}
+
+universe create_three_body(void) {
+    universe u;
     u.add(&x0);
     u.add(&x1);
     u.add(&x2);
-    /*
-    u.add(&v0);
-    u.add(&v1);
-    u.add(&v2);
-    u.add(&v3);
-    u.add(&v4);
-    u.add(&v5);
-    u.add(&v6);
-    */
+    return u;
+}
+
+universe create_universe_earth_test(void) {
+    universe u;    
+    u.add(&sun);
+    u.add(&earth);   
     return u;
 }
 
@@ -80,51 +81,30 @@ int main(int argc, char* argv[]) {
     //const char* outfilename = "Universe_Test.csv";
     file_.open(outfilename);
     double time = 0.0;
-    double dt = 0.01;
-    double final_time = 100;
+    double dt = 86400.0 / 2.0;
+    double final_time = 86400.0 * 366.0;
     int step_no = 0;
+    double tol = 400000;
 
-    universe u = create_universe();
+    universe u = create_solar_system();
+    output_preamble(u, file_);
 
-    file_ << "NUM_BODIES\n" << u.num_of_bodies <<"\n";
-    file_ << "\nNUM_STEPS\n" << final_time / dt << "\n";
-    file_ << "\nNAMES\n";
-    for (auto i = 0; i < u.num_of_bodies; i++)
-        file_ << u.body_at(i)->name << "\n";    
-    
-    file_ << "\nMASSES\n";
-    for (auto i = 0; i < u.num_of_bodies; i++)
-        file_ << u.body_at(i)->mass << "\n";    
-    
-    file_ << "\nRADII\n";
-    for (auto i = 0; i < u.num_of_bodies; i++)
-        file_ << u.body_at(i)->radius << "\n";
-
-    file_ << "\nTRAJECTORIES\n";
-    file_ << "Step No,";
-    for (auto i = 0; i < u.num_of_bodies; i++) {
-        file_ << u.body_at(i)->name <<"x" << ",";
-        file_ << u.body_at(i)->name <<"y" << ",";
-        file_ << u.body_at(i)->name <<"z" << ",";
-        file_ << u.body_at(i)->name <<"vx" << ",";
-        file_ << u.body_at(i)->name <<"vy" << ",";
-        file_ << u.body_at(i)->name <<"vz" << ",";
-    }
-    file_ << "\n";
-    while (time < final_time) {
+    while ((time < final_time) && (step_no <= 20000)) {
         int retval = NO_ERROR;
-        std::cerr << "\rScanlines remaining: " << (final_time / dt) - step_no << ' ' << "Error code: " << retval << "    " << std::flush;
-        retval = u.step_runge_kutta(&u, dt);
+        std::cerr << "\rTime remaining: " << final_time - time - dt << ' ' << "Step no: " << step_no << "    " << std::flush;
+        retval = u.step_rkf45(&u, tol, dt);
         if (retval != NO_ERROR) { 
             std::cerr << "\nERROR: " << retval << " See error.h for more\n";
             return retval; 
         } // end if
 
-        output_no_whitespace(step_no, u, file_, ",");
+        output_no_whitespace(time / 86400.0, u, file_, ",");
         step_no++;
         time += dt;
     } // end while
     std::cerr << "\nDone.\n";
+
+    output_number_of_steps(step_no, file_);
 
 	return 0;
 }

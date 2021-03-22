@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClCompile Include="body.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="universe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="body.h" />

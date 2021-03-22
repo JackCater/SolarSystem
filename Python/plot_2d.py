@@ -16,7 +16,8 @@ class plot_traj:
         self.number_of_bodies, self.number_of_steps = 0, 0
         self.fig = plt.figure()
         self.ax = plt.axes()
-        self.data_list, self.line_list, self.data = [], [], []
+        self.time_text = self.ax.text(0.5,0.5,'', verticalalignment='bottom', horizontalalignment='right')
+        self.data_list, self.line_list, self.data, self.time_list, = [], [], [], []
         # The keywords arguments are handled below
         self.xlim, self.ylim = xlim, ylim
         self.tail, self.labels, self.show_anim, self.axes = tail, labels, show_anim, axes
@@ -57,6 +58,11 @@ class plot_traj:
 
         # Open dataframe to the trajectories information
         self.df = pd.read_csv(self.filename, skiprows=3 * self.number_of_bodies + 10)
+
+        # Add time points to Array
+        for t in range(self.number_of_steps):
+            self.time_list.append(float(self.df.iloc[t]['Step No']))
+
         # Remove the two unnecessary columns (could be done in C++)
         # Unnamed: creates a column called 'Unnamed: n' where n is the number of bodies * 6 + 1
         self.df = self.df.drop(columns=['Step No', 'Unnamed: ' + str(self.number_of_bodies * 6 + 1)])
@@ -110,7 +116,6 @@ class plot_traj:
             else:
                 plt.ylim(min(min_array_y), max(max_array_y))
 
-
         # Create body and line object for each planet/star
         for bodies in range(len(self.names)):
             body_obj, = self.ax.plot([], [], colour_list[bodies], marker=".", lw=1)
@@ -146,16 +151,17 @@ class plot_traj:
             self.line_list[x].set_data(self.df.loc[0:self.frame, self.names[x] + 'x'],
                                           self.df.loc[0:self.frame, self.names[x] + 'y'])
 
-        return self.line_list + self.data_list #and self.ax,
+        self.time_text.set_text(self.time_list[self.frame])
+        return self.line_list + self.data_list + [self.time_text]
 
     def animate(self, f):
-        anim = animation.FuncAnimation(self.fig, self._update, frames=self.number_of_steps, interval=1/60, blit=True)
+        anim = animation.FuncAnimation(self.fig, self._update, frames=self.number_of_steps, interval=1, blit=True)
         # If the keyword argument for show animation is true, show the plot
         if self.show_anim:
             plt.show()
         if self.save:
-            anim.save(f, writer='PillowWriter', fps=30)
+            anim.save(f, writer='PillowWriter', fps=60)
 
 if __name__ == "__main__":
-    planets = plot_traj("Test1.csv", show_anim=True)
-    plot_traj.animate(planets, r"C://Users/Jcater/source/repos/SolarSystem/Python/test3.gif")
+    planets = plot_traj("Test2.csv", show_anim=True, save=False)
+    plot_traj.animate(planets, r"C://Users/Jcater/source/repos/SolarSystem/Python/test4.gif")

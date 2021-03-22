@@ -72,7 +72,7 @@ inline double cross(const vec3& u, const vec3& v) {
 	return c.x() - c.y() + c.z();
 } // end cross
 
-inline vec3 unit_vector(vec3 v) { return v / v.length(); } // Unit vector
+inline vec3 unit_vector(vec3 v) { return v / abs(v.length()); } // Unit vector
 
 inline vec3 unit_vector_two_vectors(vec3 v, vec3 u) { return (v - u) / abs(v.length() - u.length()); } // Unit vector between two vectors
 

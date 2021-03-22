@@ -21,6 +21,20 @@ private:
 	*********************************************************/
 	std::vector<body*> objects; // List of objects in the universe
 
+	/*********************************************************
+	Private Functions
+	*********************************************************/	
+	/// <summary>
+	/// Checks to see if the step will be accepted and updated parameters
+	/// </summary>
+	/// <param name="universe">The universe object</param>
+	/// <param name="err">The error from the calculation</param>
+	/// <param name="tol">The acceptable tolerance on the error</param>
+	/// <param name="dt">The time step</param>
+	/// <param name="pos_vel_vec">The std::vector containing the position and velocity parameters</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int check_step(universe* universe, double err, double tol, double& dt, std::vector<pos_vel_params> pos_vel_vec);
+
 public:
 	/*********************************************************
 	Constructors and destructors
@@ -51,7 +65,7 @@ public:
 	/// Adds planet/star to the universe
 	/// </summary>
 	/// <param name="object">The planet/star</param>
-	void add(body* object) { objects.push_back(object); }
+	void add(body* object) { objects.emplace_back(object); }
 
 	/*********************************************************
 	Getters
@@ -65,7 +79,7 @@ public:
 	__declspec(property(get = get_num_of_bodies)) unsigned __int64 num_of_bodies;	// Number of bodies in universe
 
 	/*********************************************************
-	Methods for computation
+	Methods for computation - defined in universe.cpp!!
 	*********************************************************/
 	/// <summary>
 	/// Computes the next step of the simulation using the Euler method
@@ -74,16 +88,7 @@ public:
 	/// <param name="acting_force">The body being the acting force, usually a star</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_euler(body* acting_force, double dt) {
-		// If body is a nullptr return an error
-		if (acting_force == nullptr) return ERR_BODY_NULLPTR;
-
-		for (const auto& object : objects) {
-			int retval = object->step_euler(acting_force, dt);
-			if (retval != NO_ERROR) return retval;
-		} // end for
-		return NO_ERROR; 
-	} // end step_euler
+	int step_euler(body* acting_force, double dt);
 	
 	/// <summary>
 	/// Computes the next step in the simulation using the Euler method
@@ -92,24 +97,7 @@ public:
 	/// <param name="u">The universe</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_euler(universe* u, double dt) {
-		// If the universe does not exist return error
-		if (u == nullptr) return ERR_UNIVERSE_NULLPTR;
-
-		// If there are no bodies in the universe return an error
-		if (u->num_of_bodies == 0) return ERR_NO_BODY_IN_UNIVERSE;
-
-		// If a body in the universe is a nullptr return error
-		for (auto i = 0; i < u->num_of_bodies; i++)
-			if (u->body_at(i) == nullptr) return ERR_BODY_NULLPTR;
-
-		// For every body in the universe compute the force felt by all other bodies
-		for (const auto& object : objects) { 
-			int retval = object->step_euler(u, dt); 
-			if (retval != NO_ERROR) return retval;
-		} // end for
-		return NO_ERROR; 
-	} // end step_euler
+	int step_euler(universe* u, double dt);
 	
 	/// <summary>
 	/// Computes the next step of the simulation using the Runge Kutta fourth order method
@@ -118,16 +106,7 @@ public:
 	/// <param name="acting_force">The body being the acting force, usually a star</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rk4(body* acting_force, double dt) {
-		if (acting_force == nullptr) return ERR_BODY_NULLPTR;
-
-		for (const auto& object : objects) {
-			int retval = object->step_rk4(acting_force, dt);
-			if (retval != NO_ERROR) return retval;
-		} // end for			
-
-		return NO_ERROR; 
-	} // end step_rk4
+	int step_rk4(body* acting_force, double dt);
 
 	/// <summary>
 	/// Computes the next step in the simulation using the Runge Kutta fourth order method
@@ -136,24 +115,7 @@ public:
 	/// <param name="u">The universe</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rk4(universe* u, double dt) { 
-		// If the universe does not exist return error
-		if (u == nullptr) return ERR_UNIVERSE_NULLPTR;
-
-		// If there are no bodies in the universe return an error
-		if (u->num_of_bodies == 0) return ERR_NO_BODY_IN_UNIVERSE;
-
-		// If a body in the universe is a nullptr return error
-		for (auto i = 0; i < u->num_of_bodies; i++)
-			if (u->body_at(i) == nullptr) return ERR_BODY_NULLPTR;
-
-		// For every body in the universe compute the force felt by all other bodies
-		for (const auto& object : objects) {
-			int retval = object->step_rk4(u, dt);
-			if (retval != NO_ERROR) return retval;
-		} // end for
-		return NO_ERROR; 
-	} // end step_rk4
+	int step_rk4(universe* u, double dt);
 	  
 	/// <summary>
 	/// Computes the next step of the simulation using the Runge Kutta Fehlberg fourth order method
@@ -162,15 +124,7 @@ public:
 	/// <param name="acting_force">The body being the acting force, usually a star</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rkf4(body* acting_force, double dt) {
-		if (acting_force == nullptr) return ERR_BODY_NULLPTR;
-		for (const auto& object : objects) {
-			int retval = object->step_rkf4(acting_force, dt);
-			if (retval != NO_ERROR) return retval;
-		} // end for			
-
-		return NO_ERROR; 
-	} // end step_rkf4
+	int step_rkf4(body* acting_force, double dt);
 
 	/// <summary>
 	/// Computes the next step in the simulation using the Runge Kutta Fehlberg fourth order method
@@ -179,25 +133,7 @@ public:
 	/// <param name="u">The universe</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rkf4(universe* u, double dt) { 
-		// If the universe does not exist return error
-		if (u == nullptr) return ERR_UNIVERSE_NULLPTR;
-
-		// If there are no bodies in the universe return an error
-		if (u->num_of_bodies == 0) return ERR_NO_BODY_IN_UNIVERSE;
-
-		// If a body in the universe is a nullptr return error
-		for (auto i = 0; i < u->num_of_bodies; i++)
-			if (u->body_at(i) == nullptr) return ERR_BODY_NULLPTR;
-
-		// For every body in the universe compute the force felt by all other bodies
-		for (const auto& object : objects) {
-			int retval = object->step_rkf4(u, dt);
-			if (retval != NO_ERROR) return retval;
-		} // end for
-		return NO_ERROR; 
-	} // end step_rkf4	
-	  
+	int step_rkf4(universe* u, double dt);
 	/// <summary>
 	/// Computes the next step of the simulation using the Runge Kutta Fehlberg fifth order method
 	/// for all planets in the universe but with only ONE body being the acting force
@@ -205,15 +141,7 @@ public:
 	/// <param name="acting_force">The body being the acting force, usually a star</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rkf5(body* acting_force, double dt) {
-		if (acting_force == nullptr) return ERR_BODY_NULLPTR;
-		for (const auto& object : objects) {
-			int retval = object->step_rkf5(acting_force, dt);
-			if (retval != NO_ERROR) return retval;
-		} // end for			
-
-		return NO_ERROR; 
-	} // end step_rkf5
+	int step_rkf5(body* acting_force, double dt);
 
 	/// <summary>
 	/// Computes the next step in the simulation using the Runge Kutta Fehlberg fifth order method
@@ -222,24 +150,7 @@ public:
 	/// <param name="u">The universe</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rkf5(universe* u, double dt) { 
-		// If the universe does not exist return error
-		if (u == nullptr) return ERR_UNIVERSE_NULLPTR;
-
-		// If there are no bodies in the universe return an error
-		if (u->num_of_bodies == 0) return ERR_NO_BODY_IN_UNIVERSE;
-
-		// If a body in the universe is a nullptr return error
-		for (auto i = 0; i < u->num_of_bodies; i++)
-			if (u->body_at(i) == nullptr) return ERR_BODY_NULLPTR;
-
-		// For every body in the universe compute the force felt by all other bodies
-		for (const auto& object : objects) {
-			int retval = object->step_rkf5(u, dt);
-			if (retval != NO_ERROR) return retval;
-		} // end for
-		return NO_ERROR; 
-	} // end step_rkf5	
+	int step_rkf5(universe* u, double dt);
 	  
 	/// <summary>
 	/// Computes the next step of the simulation using the Runge Kutta Fehlberg fifth order method
@@ -248,17 +159,7 @@ public:
 	/// <param name="acting_force">The body being the acting force, usually a star</param>
 	/// <param name="dt">The time step, for the adaptive method this needs to be passed by reference</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rkf45(body* acting_force, double tol, double& dt) {
-		// If there is no acting force return an error
-		if (acting_force == nullptr) return ERR_BODY_NULLPTR;
-
-		for (const auto& object : objects) {
-			int retval = object->step_rkf45(acting_force, tol, dt);
-			if (retval != NO_ERROR) return retval;
-		} // end for	
-		
-		return NO_ERROR; 
-	} // end step_rkf45
+	int step_rkf45(body* acting_force, double tol, double& dt);
 
 	/// <summary>
 	/// Computes the next step in the simulation using the Runge Kutta Fehlberg fifth order method
@@ -267,25 +168,7 @@ public:
 	/// <param name="u">The universe</param>
 	/// <param name="dt">The time step, for the adaptive method this needs to be passed by reference</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rkf45(universe* u, double tol, double& dt) { 
-		// If the universe does not exist return error
-		if (u == nullptr) return ERR_UNIVERSE_NULLPTR;
-
-		// If there are no bodies in the universe return an error
-		if (u->num_of_bodies == 0) return ERR_NO_BODY_IN_UNIVERSE;
-
-		// If a body in the universe is a nullptr return error
-		for (auto i = 0; i < u->num_of_bodies; i++)
-			if (u->body_at(i) == nullptr) return ERR_BODY_NULLPTR;
-
-		// For every body in the universe compute the force felt by all other bodies
-		for (const auto& object : objects) {
-			int retval = object->step_rkf45(u, tol, dt);
-			if (retval != NO_ERROR) return retval;
-		} // end for
-
-		return NO_ERROR; 
-	} // end step_rkf45
+	int step_rkf45(universe* u, double tol, double& dt);
 }; // end class universe
 
 /// <summary>

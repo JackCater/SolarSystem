@@ -25,16 +25,16 @@ enum BODY_ERRORS : short {
 /// Calculation based errors
 /// </summary>
 enum CALCULATION_ERRORS : short {
-	ERR_X_NAN = 0x01,	// The x value returned NaN
-	ERR_Y_NAN = 0x02,	// The y value returned NaN
-	ERR_Z_NAN = 0x03,	// The z value returned NaN
-	ERR_VX_NAN = 0x04,	// The vx value returned NaN
-	ERR_VY_NAN = 0x05,	// The vy value returned NaN
-	ERR_VZ_NAN = 0x06,	// The vz value returned NaN
-	ERR_AX_NAN = 0x07,	// The ax value returned NaN
-	ERR_AY_NAN = 0x08,	// The ay value returned NaN
-	ERR_AZ_NAN = 0x09,	// The az value returned NaN
-	ERR_OUTSIDE_TOL = 0x10, // The value is outside of the tolerance
+	ERR_X_NAN = 0x10,	// The x value returned NaN
+	ERR_Y_NAN = 0x11,	// The y value returned NaN
+	ERR_Z_NAN = 0x12,	// The z value returned NaN
+	ERR_VX_NAN = 0x13,	// The vx value returned NaN
+	ERR_VY_NAN = 0x14,	// The vy value returned NaN
+	ERR_VZ_NAN = 0x15,	// The vz value returned NaN
+	ERR_AX_NAN = 0x16,	// The ax value returned NaN
+	ERR_AY_NAN = 0x17,	// The ay value returned NaN
+	ERR_AZ_NAN = 0x18,	// The az value returned NaN
+	ERR_OUTSIDE_TOL = 0x19, // The value is outside of the tolerance
 };
 
 /// <summary>

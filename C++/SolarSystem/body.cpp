@@ -6,9 +6,27 @@
 #include "body.h"
 #include "universe.h"
 
+#pragma region private functions
 /*****************************************************************************************************
 PRIVATE FUNCTIONS
 *****************************************************************************************************/
+int body::compute_acceleration(point3 pos, double& ax, double& ay, double& az) {
+	vec3 f; // Force vector
+	f = -grav_constant * (this->mass / pos.length_squared()) * unit_vector(pos);
+	ax += f.x();
+	ay += f.y();
+	az += f.z();
+
+	//ax += (grav_constant * _mass * pos.x()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
+	//ay += (grav_constant * _mass * pos.y()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
+	//az += (grav_constant * _mass * pos.z()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
+
+	// if the acceleration applied on a body is NaN return an error
+	if (ax != ax) return ERR_AX_NAN;
+	if (ay != ay) return ERR_AY_NAN;
+	if (az != az) return ERR_AZ_NAN;
+	return NO_ERROR;
+} // end compute_acceleration
 
 int body::error_check(body* acting_force) {
 	// If two bodies have collided, 'delete' them
@@ -67,19 +85,19 @@ int body::compute_rkf45_variables(body* acting_force, rkf45_variables& v, double
 		// Calculates Runge-Kutta variables 
 		// K1
 		v.k1x = this->vx, v.k1y = this->vy, v.k1z = this->vz;
-		retval = acting_force->compute_acceleration(distance_vector(this->pos, acting_force->pos), v.k1vx, v.k1vy, v.k1vz);
+		retval = acting_force->compute_acceleration(distance_vector(acting_force->pos, this->pos), v.k1vx, v.k1vy, v.k1vz);
 		if (retval != NO_ERROR) return retval;
 
 		// K2
 		v.k2x = this->vx + (v.k1vx * (dt / 4.0)), v.k2y = this->vy + (v.k1vy * (dt / 4.0)), v.k2z = this->vz + (v.k1vz * (dt / 4.0));
-		retval = acting_force->compute_acceleration(distance_vector(this->pos, acting_force->pos) + point3(v.k1x * (dt / 4.0), v.k1y * (dt / 4.0), v.k1z * (dt / 4.0)), v.k2vx, v.k2vy, v.k2vz);
+		retval = acting_force->compute_acceleration(distance_vector(acting_force->pos, this->pos) + point3(v.k1x * (dt / 4.0), v.k1y * (dt / 4.0), v.k1z * (dt / 4.0)), v.k2vx, v.k2vy, v.k2vz);
 		if (retval != NO_ERROR) return retval;
 
 		// K3
 		v.k3x = this->vx + ((3.0 * v.k1vx) / 32.0) + ((9.0 * v.k2vx) / 32.0) * ((3.0 * dt) / 8.0);
 		v.k3y = this->vy + ((3.0 * v.k1vy) / 32.0) + ((9.0 * v.k2vy) / 32.0) * ((3.0 * dt) / 8.0);
 		v.k3z = this->vz + ((3.0 * v.k1vz) / 32.0) + ((9.0 * v.k2vz) / 32.0) * ((3.0 * dt) / 8.0);
-		retval = acting_force->compute_acceleration(distance_vector(this->pos, acting_force->pos) + point3(
+		retval = acting_force->compute_acceleration(distance_vector(acting_force->pos, this->pos) + point3(
 			((3.0 * v.k1x) / 32.0) + ((9.0 * v.k2x) / 32.0) * ((3.0 * dt) / 8.0),
 			((3.0 * v.k1y) / 32.0) + ((9.0 * v.k2y) / 32.0) * ((3.0 * dt) / 8.0),
 			((3.0 * v.k1z) / 32.0) + ((9.0 * v.k2z) / 32.0) * ((3.0 * dt) / 8.0)), v.k3vx, v.k3vy, v.k3vz);
@@ -89,7 +107,7 @@ int body::compute_rkf45_variables(body* acting_force, rkf45_variables& v, double
 		v.k4x = this->vx + ((1932.0 * v.k1vx) / 2197.0) - ((7200.0 * v.k2vx) / 2197.0) + ((7296.0 * v.k3vx) / 2197.0) * ((12.0 * dt) / 13.0);
 		v.k4y = this->vy + ((1932.0 * v.k1vy) / 2197.0) - ((7200.0 * v.k2vy) / 2197.0) + ((7296.0 * v.k3vy) / 2197.0) * ((12.0 * dt) / 13.0);
 		v.k4z = this->vz + ((1932.0 * v.k1vz) / 2197.0) - ((7200.0 * v.k2vz) / 2197.0) + ((7296.0 * v.k3vz) / 2197.0) * ((12.0 * dt) / 13.0);
-		retval = acting_force->compute_acceleration(distance_vector(this->pos, acting_force->pos) + point3(
+		retval = acting_force->compute_acceleration(distance_vector(acting_force->pos, this->pos) + point3(
 			((1932.0 * v.k1x) / 2197.0) - ((7200.0 * v.k2x) / 2197.0) + ((7296.0 * v.k3x) / 2197.0) * ((12.0 * dt) / 13.0),
 			((1932.0 * v.k1y) / 2197.0) - ((7200.0 * v.k2y) / 2197.0) + ((7296.0 * v.k3y) / 2197.0) * ((12.0 * dt) / 13.0),
 			((1932.0 * v.k1z) / 2197.0) - ((7200.0 * v.k2z) / 2197.0) + ((7296.0 * v.k3z) / 2197.0) * ((12.0 * dt) / 13.0)), v.k4vx, v.k4vy, v.k4vz);
@@ -99,7 +117,7 @@ int body::compute_rkf45_variables(body* acting_force, rkf45_variables& v, double
 		v.k5x = this->vx + ((439.0 * v.k1vx) / 216.0) - (8.0 * v.k2vx) + ((3680.0 * v.k3vx) / 513.0) - ((845.0 * v.k4vx) / 4104.0) * dt;
 		v.k5y = this->vy + ((439.0 * v.k1vy) / 216.0) - (8.0 * v.k2vy) + ((3680.0 * v.k3vy) / 513.0) - ((845.0 * v.k4vy) / 4104.0) * dt;
 		v.k5z = this->vz + ((439.0 * v.k1vz) / 216.0) - (8.0 * v.k2vz) + ((3680.0 * v.k3vz) / 513.0) - ((845.0 * v.k4vz) / 4104.0) * dt;
-		retval = acting_force->compute_acceleration(distance_vector(this->pos, acting_force->pos) + point3(
+		retval = acting_force->compute_acceleration(distance_vector(acting_force->pos, this->pos) + point3(
 			((439.0 * v.k1x) / 216.0) - (8.0 * v.k2x) + ((3680.0 * v.k3x) / 513.0) - ((845.0 * v.k4x) / 4104.0) * dt,
 			((439.0 * v.k1y) / 216.0) - (8.0 * v.k2y) + ((3680.0 * v.k3y) / 513.0) - ((845.0 * v.k4y) / 4104.0) * dt,
 			((439.0 * v.k1z) / 216.0) - (8.0 * v.k2z) + ((3680.0 * v.k3z) / 513.0) - ((845.0 * v.k4z) / 4104.0) * dt), v.k5vx, v.k5vy, v.k5vz);
@@ -109,7 +127,7 @@ int body::compute_rkf45_variables(body* acting_force, rkf45_variables& v, double
 		v.k6x = this->vx + (-(8.0 * v.k1vx) / 27.0) + (2.0 * v.k2vx) - ((3544.0 * v.k3vx) / 2565.0) + ((1859.0 * v.k4vx) / 4104.0) - ((11.0 * v.k5vx) / 40.0) * (dt / 2.0);
 		v.k6y = this->vy + (-(8.0 * v.k1vy) / 27.0) + (2.0 * v.k2vy) - ((3544.0 * v.k3vy) / 2565.0) + ((1859.0 * v.k4vy) / 4104.0) - ((11.0 * v.k5vy) / 40.0) * (dt / 2.0);
 		v.k6z = this->vz + (-(8.0 * v.k1vz) / 27.0) + (2.0 * v.k2vz) - ((3544.0 * v.k3vz) / 2565.0) + ((1859.0 * v.k4vz) / 4104.0) - ((11.0 * v.k5vz) / 40.0) * (dt / 2.0);
-		retval = acting_force->compute_acceleration(distance_vector(this->pos, acting_force->pos) + point3(
+		retval = acting_force->compute_acceleration(distance_vector(acting_force->pos, this->pos) + point3(
 			(-(8.0 * v.k1x) / 27.0) + (2.0 * v.k2x) - ((3544.0 * v.k3x) / 2565.0) + ((1859.0 * v.k4x) / 4104.0) - ((11.0 * v.k5x) / 40.0) * (dt / 2.0),
 			(-(8.0 * v.k1y) / 27.0) + (2.0 * v.k2y) - ((3544.0 * v.k3y) / 2565.0) + ((1859.0 * v.k4y) / 4104.0) - ((11.0 * v.k5y) / 40.0) * (dt / 2.0),
 			(-(8.0 * v.k1z) / 27.0) + (2.0 * v.k2z) - ((3544.0 * v.k3z) / 2565.0) + ((1859.0 * v.k4z) / 4104.0) - ((11.0 * v.k5z) / 40.0) * (dt / 2.0)), v.k6vx, v.k6vy, v.k6vz);
@@ -131,7 +149,7 @@ int body::compute_rkf45_variables(universe* u, rkf45_variables& v, double dt) {
 		// if the body calling this is not the body at i in the list and both bodies include flags are true
 		if (this != u->body_at(i) && this->_include == true && u->body_at(i)->_include == true) {
 			// Compute acceleration
-			retval = u->body_at(i)->compute_acceleration(distance_vector(this->pos, u->body_at(i)->pos), v.k1vx, v.k1vy, v.k1vz);
+			retval = u->body_at(i)->compute_acceleration(distance_vector(u->body_at(i)->pos, this->pos), v.k1vx, v.k1vy, v.k1vz);
 			if (retval != NO_ERROR) return retval;
 		} // end if
 
@@ -142,7 +160,7 @@ int body::compute_rkf45_variables(universe* u, rkf45_variables& v, double dt) {
 		// if the body calling this is not the body at i in the list and both bodies include flags are true
 		if (this != u->body_at(i) && this->_include == true && u->body_at(i)->_include == true) {
 			// Compute acceleration
-			retval = u->body_at(i)->compute_acceleration(distance_vector(this->pos, u->body_at(i)->pos) + point3(v.k1x * (dt / 4.0), v.k1y * (dt / 4.0), v.k1z * (dt / 4.0)), v.k2vx, v.k2vy, v.k2vz);
+			retval = u->body_at(i)->compute_acceleration(distance_vector(u->body_at(i)->pos, this->pos) + point3(v.k1x * (dt / 4.0), v.k1y * (dt / 4.0), v.k1z * (dt / 4.0)), v.k2vx, v.k2vy, v.k2vz);
 			if (retval != NO_ERROR) return retval;
 		} // end if
 
@@ -155,7 +173,7 @@ int body::compute_rkf45_variables(universe* u, rkf45_variables& v, double dt) {
 		// if the body calling this is not the body at i in the list and both bodies include flags are true
 		if (this != u->body_at(i) && this->_include == true && u->body_at(i)->_include == true) {
 			// Compute acceleration
-			retval = u->body_at(i)->compute_acceleration(distance_vector(this->pos, u->body_at(i)->pos) + point3(
+			retval = u->body_at(i)->compute_acceleration(distance_vector(u->body_at(i)->pos, this->pos) + point3(
 				((((3.0 * v.k1x) / 32.0) + ((9.0 * v.k2x) / 32.0)) * ((3.0 * dt) / 8.0)),
 				((((3.0 * v.k1y) / 32.0) + ((9.0 * v.k2y) / 32.0)) * ((3.0 * dt) / 8.0)),
 				((((3.0 * v.k1z) / 32.0) + ((9.0 * v.k2z) / 32.0)) * ((3.0 * dt) / 8.0))), v.k3vx, v.k3vy, v.k3vz);
@@ -171,7 +189,7 @@ int body::compute_rkf45_variables(universe* u, rkf45_variables& v, double dt) {
 		// if the body calling this is not the body at i in the list and both bodies include flags are true
 		if (this != u->body_at(i) && this->_include == true && u->body_at(i)->_include == true) {
 			// Compute acceleration
-			retval = u->body_at(i)->compute_acceleration(distance_vector(this->pos, u->body_at(i)->pos) + point3(
+			retval = u->body_at(i)->compute_acceleration(distance_vector(u->body_at(i)->pos, this->pos) + point3(
 				((((1932.0 * v.k1x) / 2197.0) - ((7200.0 * v.k2x) / 2197.0) + ((7296.0 * v.k3x) / 2197.0)) * ((12.0 * dt) / 13.0)),
 				((((1932.0 * v.k1y) / 2197.0) - ((7200.0 * v.k2y) / 2197.0) + ((7296.0 * v.k3y) / 2197.0)) * ((12.0 * dt) / 13.0)),
 				((((1932.0 * v.k1z) / 2197.0) - ((7200.0 * v.k2z) / 2197.0) + ((7296.0 * v.k3z) / 2197.0)) * ((12.0 * dt) / 13.0))), v.k4vx, v.k4vy, v.k4vz);
@@ -187,7 +205,7 @@ int body::compute_rkf45_variables(universe* u, rkf45_variables& v, double dt) {
 		// if the body calling this is not the body at i in the list and both bodies include flags are true
 		if (this != u->body_at(i) && this->_include == true && u->body_at(i)->_include == true) {
 			// Compute acceleration
-			retval = u->body_at(i)->compute_acceleration(distance_vector(this->pos, u->body_at(i)->pos) + point3(
+			retval = u->body_at(i)->compute_acceleration(distance_vector(u->body_at(i)->pos, this->pos) + point3(
 				((((439.0 * v.k1x) / 216.0) - (8.0 * v.k2x) + ((3680.0 * v.k3x) / 513.0) - ((845.0 * v.k4x) / 4104.0)) * dt),
 				((((439.0 * v.k1y) / 216.0) - (8.0 * v.k2y) + ((3680.0 * v.k3y) / 513.0) - ((845.0 * v.k4y) / 4104.0)) * dt),
 				((((439.0 * v.k1z) / 216.0) - (8.0 * v.k2z) + ((3680.0 * v.k3z) / 513.0) - ((845.0 * v.k4z) / 4104.0)) * dt)), v.k5vx, v.k5vy, v.k5vz);
@@ -203,7 +221,7 @@ int body::compute_rkf45_variables(universe* u, rkf45_variables& v, double dt) {
 		// if the body calling this is not the body at i in the list and both bodies include flags are true
 		if (this != u->body_at(i) && this->_include == true && u->body_at(i)->_include == true) {
 			// Compute acceleration
-			retval = u->body_at(i)->compute_acceleration(distance_vector(this->pos, u->body_at(i)->pos) + point3(
+			retval = u->body_at(i)->compute_acceleration(distance_vector(u->body_at(i)->pos, this->pos) + point3(
 				(-(8.0 * v.k1x) / 27.0) + (2.0 * v.k2x) - ((3544.0 * v.k3x) / 2565.0) + ((1859.0 * v.k4x) / 4104.0) - ((11.0 * v.k5x) / 40.0) * (dt / 2.0),
 				(-(8.0 * v.k1y) / 27.0) + (2.0 * v.k2y) - ((3544.0 * v.k3y) / 2565.0) + ((1859.0 * v.k4y) / 4104.0) - ((11.0 * v.k5y) / 40.0) * (dt / 2.0),
 				(-(8.0 * v.k1z) / 27.0) + (2.0 * v.k2z) - ((3544.0 * v.k3z) / 2565.0) + ((1859.0 * v.k4z) / 4104.0) - ((11.0 * v.k5z) / 40.0) * (dt / 2.0)), v.k6vx, v.k6vy, v.k6vz);
@@ -251,7 +269,7 @@ int body::step_adaptive_method(body* acting_force, double& error, double dt, pos
 	error = abs(z_tot - y_tot);
 
 	// Check for errors
-	retval = error_check(this);
+	retval = error_check(acting_force);
 	if (retval != NO_ERROR) return retval;
 
 	return NO_ERROR;
@@ -309,8 +327,20 @@ int body::step_adaptive_method(universe* u, double& error, double dt, pos_vel_pa
 	return NO_ERROR;
 } // end step_adapative_method
 
-int body::update_params(pos_vel_params params)
-{
+void body::set_to_zero() {
+	this->_mass = 0;
+	this->_radius = 0;
+	this->_velocity = vel3(0.0, 0.0, 0.0);
+	this->_include = false; // Body will no longer be included in computations
+	return;
+} // end set_to_zero
+#pragma endregion
+
+#pragma region public functions
+/*****************************************************************************************************
+PUBLIC FUNCTIONS
+*****************************************************************************************************/
+int body::update_params(pos_vel_params params) {
 	this->x += params.x;
 	this->y += params.y;
 	this->z += params.z;
@@ -319,10 +349,6 @@ int body::update_params(pos_vel_params params)
 	this->vz -= params.vz;
 	return NO_ERROR;
 } // end update_params
-
-/*****************************************************************************************************
-PUBLIC FUNCTIONS
-*****************************************************************************************************/
 
 int body::step_euler(body* acting_force, double dt) {
 	// If the body object is null return error
@@ -342,7 +368,7 @@ int body::step_euler(body* acting_force, double dt) {
 		this->vz -= az * dt;
 	} // end if
 	// Check for errors
-	retval = error_check(this);
+	retval = error_check(acting_force);
 	if (retval != NO_ERROR) return retval;
 
 	return NO_ERROR;
@@ -397,22 +423,22 @@ int body::step_rk4(body* acting_force, double dt) {
 		// Calculates Runge-Kutta variables 
 		// K1
 		double k1x = this->vx, k1y = this->vy, k1z = this->vz;
-		retval = acting_force->compute_acceleration(distance_vector(this->pos, acting_force->pos), k1vx, k1vy, k1vz);
+		retval = acting_force->compute_acceleration(distance_vector(acting_force->pos, this->pos), k1vx, k1vy, k1vz);
 		if (retval != NO_ERROR) return retval;
 
 		// K2
 		double k2x = this->vx + (k1vx * (dt / 2.0)), k2y = this->vy + (k1vy * (dt / 2.0)), k2z = this->vz + (k1vz * (dt / 2.0));
-		retval = acting_force->compute_acceleration(distance_vector(this->pos, acting_force->pos) + point3(k1x * (dt / 2.0), k1y * (dt / 2.0), k1z * (dt / 2.0)), k2vx, k2vy, k2vz);
+		retval = acting_force->compute_acceleration(distance_vector(acting_force->pos, this->pos) + point3(k1x * (dt / 2.0), k1y * (dt / 2.0), k1z * (dt / 2.0)), k2vx, k2vy, k2vz);
 		if (retval != NO_ERROR) return retval;
 
 		// K3
 		double k3x = this->vx + k2vx * (dt / 2.0), k3y = this->vy + k2vy * (dt / 2.0), k3z = this->vz + (k2vz * (dt / 2.0));
-		retval = acting_force->compute_acceleration(distance_vector(this->pos, acting_force->pos) + point3(k2x * (dt / 2.0), k2y * (dt / 2.0), k2z * (dt / 2.0)), k3vx, k3vy, k3vz);
+		retval = acting_force->compute_acceleration(distance_vector(acting_force->pos, this->pos) + point3(k2x * (dt / 2.0), k2y * (dt / 2.0), k2z * (dt / 2.0)), k3vx, k3vy, k3vz);
 		if (retval != NO_ERROR) return retval;
 
 		// K4
 		double k4x = this->vx + k3vx * dt, k4y = this->vy + k3vy * dt, k4z = this->vz + k3vz * dt;
-		retval = acting_force->compute_acceleration(distance_vector(this->pos, acting_force->pos) + point3(k3x * dt, k3y * dt, k3z * dt), k4vx, k4vy, k4vz);
+		retval = acting_force->compute_acceleration(distance_vector(acting_force->pos, this->pos) + point3(k3x * dt, k3y * dt, k3z * dt), k4vx, k4vy, k4vz);
 		if (retval != NO_ERROR) return retval;
 
 		// Updates position and velocity
@@ -425,7 +451,7 @@ int body::step_rk4(body* acting_force, double dt) {
 	} // end if
 
 	// Check errors
-	retval = error_check(this);
+	retval = error_check(acting_force);
 	if (retval != NO_ERROR) return retval;
 
 	return NO_ERROR;
@@ -457,7 +483,7 @@ int body::step_rk4(universe* u, double dt) {
 		// if the body calling this is not the body at i in the list and both bodies include flags are true
 		if (this != u->body_at(i) && this->_include == true && u->body_at(i)->_include == true) {
 			// Compute acceleration
-			u->body_at(i)->compute_acceleration(distance_vector(this->pos, u->body_at(i)->pos), k1vx, k1vy, k1vz);
+			u->body_at(i)->compute_acceleration(distance_vector(u->body_at(i)->pos, this->pos), k1vx, k1vy, k1vz);
 			if (retval != NO_ERROR) return retval;
 		} // end if
 
@@ -469,7 +495,7 @@ int body::step_rk4(universe* u, double dt) {
 		// if the body calling this is not the body at i in the list and both bodies include flags are true
 		if (this != u->body_at(i) && this->_include == true && u->body_at(i)->_include == true) {
 			// Compute acceleration
-			u->body_at(i)->compute_acceleration(distance_vector(this->pos, u->body_at(i)->pos) + point3(k1x * (dt / 2.0), k1y * (dt / 2.0), k1z * (dt / 2.0)), k2vx, k2vy, k2vz);
+			u->body_at(i)->compute_acceleration(distance_vector(u->body_at(i)->pos, this->pos) + point3(k1x * (dt / 2.0), k1y * (dt / 2.0), k1z * (dt / 2.0)), k2vx, k2vy, k2vz);
 			if (retval != NO_ERROR) return retval;
 		} // end if
 	
@@ -480,7 +506,7 @@ int body::step_rk4(universe* u, double dt) {
 		// if the body calling this is not the body at i in the list and both bodies include flags are true
 		if (this != u->body_at(i) && this->_include == true && u->body_at(i)->_include == true) {
 			// Compute acceleration
-			u->body_at(i)->compute_acceleration(distance_vector(this->pos, u->body_at(i)->pos) + point3(k2x * (dt / 2.0), k2y * (dt / 2.0), k2z * (dt / 2.0)), k3vx, k3vy, k3vz);
+			u->body_at(i)->compute_acceleration(distance_vector(u->body_at(i)->pos, this->pos) + point3(k2x * (dt / 2.0), k2y * (dt / 2.0), k2z * (dt / 2.0)), k3vx, k3vy, k3vz);
 			if (retval != NO_ERROR) return retval;
 		} // end if
 	
@@ -491,7 +517,7 @@ int body::step_rk4(universe* u, double dt) {
 		// if the body calling this is not the body at i in the list and both bodies include flags are true
 		if (this != u->body_at(i) && this->_include == true && u->body_at(i)->_include == true) {
 			// Compute acceleration
-			u->body_at(i)->compute_acceleration(distance_vector(this->pos, u->body_at(i)->pos) + point3(k3x * dt, k3y * dt, k3z * dt), k4vx, k4vy, k4vz);
+			u->body_at(i)->compute_acceleration(distance_vector(u->body_at(i)->pos, this->pos) + point3(k3x * dt, k3y * dt, k3z * dt), k4vx, k4vy, k4vz);
 			if (retval != NO_ERROR) return retval;
 		} // end if 
 
@@ -570,8 +596,7 @@ int body::step_rkf4(universe* u, double dt) {
 	return NO_ERROR;
 } // end step_rkf4
 
-int body::step_rkf5(body* acting_force, double dt)
-{
+int body::step_rkf5(body* acting_force, double dt) {
 	// If there are no body return error 
 	if (acting_force == nullptr) return ERR_BODY_NULLPTR;
 
@@ -601,8 +626,7 @@ int body::step_rkf5(body* acting_force, double dt)
 	return NO_ERROR;
 } // end step_rkf5
 
-int body::step_rkf5(universe* u, double dt)
-{
+int body::step_rkf5(universe* u, double dt) {
 	// If the universe does not exist return error
 	if (u == nullptr) return ERR_UNIVERSE_NULLPTR;
 
@@ -634,12 +658,11 @@ int body::step_rkf5(universe* u, double dt)
 	return NO_ERROR;
 } // end step_rkf5
 
-int body::step_rkf45(body* acting_force, double tol, double& dt)
-{
+int body::step_rkf45(body* acting_force, double tol, double& dt) {
 	// Init retval
 	int retval = NO_ERROR;
 	if (this != acting_force) {
-		double err;
+		double err = 0.0;
 		pos_vel_params p{ 0.0 };
 		retval = step_adaptive_method(acting_force, err, dt, p);
 		if (retval != NO_ERROR) return retval;
@@ -664,12 +687,22 @@ int body::step_rkf45(body* acting_force, double tol, double& dt)
 	return NO_ERROR;
 } // end step_rkf45
 
-int body::step_rkf45(universe* u, double tol, double& dt)
-{
-	pos_vel_params* p = new pos_vel_params[u->num_of_bodies];
-	double err;
+int body::step_rkf45(universe* u, double tol, double& err, double& dt, pos_vel_params& p) {
+	// If the universe does not exist return error
+	if (u == nullptr) return ERR_UNIVERSE_NULLPTR;
 
-	int retval = step_adaptive_method(u, err, dt, p[0]);
+	// If there are no bodies in the universe return an error
+	if (u->num_of_bodies == 0) return ERR_NO_BODY_IN_UNIVERSE;
+
+	// If a body in the universe is a nullptr return error
+	for (auto i = 0; i < u->num_of_bodies; i++)
+		if (u->body_at(i) == nullptr) return ERR_BODY_NULLPTR;
+
+	// Init retval
+	int retval = NO_ERROR;	
+	retval = step_adaptive_method(u, err, dt, p);	
+	if (retval != NO_ERROR) return retval;
 
 	return NO_ERROR;
 } // end step_rkf45
+#pragma endregion

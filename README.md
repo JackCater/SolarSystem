@@ -35,5 +35,22 @@ We see lowering the step size produces a more realistic approximation, although 
 
 However the same step size using the Euler method (a lower order numerical method) produces less realistic approximations
 
-![euler_10_day_step](https://user-images.githubusercontent.com/76100438/112336122-b5618080-8cb4-11eb-8a77-b43a63399520.gif)
+![euler_skip_days](https://user-images.githubusercontent.com/76100438/112338559-cc08d700-8cb6-11eb-8cba-ce5640c236e9.gif)
+
+
+
+In the following examples we use the Runge Kutta Fehlberg 5th order with adaptive time step. With these examples, the time step is dependant on the calculation error.
+This method computes the variables for the 5th order method, but calculates the positions and velocities for a 4th and 5th order method, the difference in these values is the error. If this error is within the tolerance the steps can be computed, if not the step is ignored and the time step is halved. If the time step is well within the error then the time step is doubled. This method utilises computation time. Please note for the ease of viewing the same number of frames are plotted in the animation but the number of steps are different.
+
+***Adpative time step with x as the tolerance***
+
+![rkf45_40000_tol](https://user-images.githubusercontent.com/76100438/112339803-e98a7080-8cb7-11eb-9031-cb7db040a7db.gif)
+
+
+***Adaptive time step with x/4 as the tolerance***
+
+![rkf45_10000_tol](https://user-images.githubusercontent.com/76100438/112339877-f6a75f80-8cb7-11eb-9b32-a7ab1953f48c.gif)
+
+
+
 

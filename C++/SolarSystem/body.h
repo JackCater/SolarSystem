@@ -212,6 +212,16 @@ public:
 	int update_params(pos_vel_params params);
 
 	/// <summary>
+	/// Checks whether the error is small enough to compute the next step
+	/// </summary>
+	/// <param name="error">The error value</param>
+	/// <param name="tolerance">The error tolerance</param>
+	/// <param name="dt">The time step</param>
+	/// <param name="params">The position velocity parameters</param>
+	/// <returns>The error code, see error.h for mmre</returns>
+	int check_step(double error, double tolerance, double& dt, pos_vel_params params);
+
+	/// <summary>
 	/// Computes one step using the Euler method
 	/// NOTE: This method only uses ONE body in the computation
 	/// So usually the star is input as the acting force
@@ -291,19 +301,33 @@ public:
 	/// Computes one step using the adaptive time step function
 	/// </summary>
 	/// <param name="acting_force">The acting force, usually the star</param>
+	/// <param name="tol">The acceptable tolerance to allow the step to pass</param>
+	/// <param name="error">The error value</param>
+	/// <param name="dt">The time step</param>
+	/// <param name="params">The position and velocity parameter struct</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int step_rkf45(body* acting_force, double tol, double& error, double& dt, pos_vel_params& params);
+	
+	/// <summary>
+	/// Computes one step using the adaptive time step function. Used when calling from a planet direct 
+	/// rather than the universe
+	/// </summary>
+	/// <param name="acting_force">The acting force, usually the star</param>
 	/// <param name="tolerance">The tolerance to allow the step to pass</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code, see error.h for more</returns>
 	int step_rkf45(body* acting_force, double tol, double& dt);
-	
+
 	/// <summary>
 	/// Computes one step using the adaptive time step function
 	/// </summary>
 	/// <param name="universe">The universe object</param>
 	/// <param name="tol">The acceptable tolerance to allow the step to pass</param>
+	/// <param name="error">The error value</param>
 	/// <param name="dt">The time step</param>
+	/// <param name="params">The position and velocity parameter struct</param>
 	/// <returns>The error code, see error.h for more</returns>
-	int step_rkf45(universe* universe, double tol, double& error, double& dt, pos_vel_params& params);
+	int step_rkf45(universe* u, double tol, double& error, double& dt, pos_vel_params& params);
 }; // end class body
 #pragma endregion
 

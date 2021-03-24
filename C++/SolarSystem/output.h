@@ -6,11 +6,13 @@
 
 #include"universe.h"
 
+// Outputs number of steps
 void output_number_of_steps(int step_no, std::ofstream& ofile) {
     ofile << "\nNUM_STEPS\n" << step_no;
     return;
 } // end output_number_of_steps
 
+// Outputs information on names and masses etc...
 void output_preamble(universe u, std::ostream& ofile) {
     ofile << "NUM_BODIES\n" << u.num_of_bodies << "\n";
     ofile << "\nNAMES\n";
@@ -39,6 +41,7 @@ void output_preamble(universe u, std::ostream& ofile) {
     return;
 } // end output_preamble
 
+// Outputs the step number and position/velocity info on all bodies in the universe
 void output(double step_number, universe u, std::ofstream& ofile) {
     ofile << std::setiosflags(std::ios::showpoint | std::ios::uppercase);
     ofile << std::setprecision(8) << step_number << " ";

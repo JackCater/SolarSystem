@@ -50,7 +50,7 @@ This method computes the variables for the 5th order method, but calculates the 
 ![rkf45_40000_tol](https://user-images.githubusercontent.com/76100438/112339803-e98a7080-8cb7-11eb-9031-cb7db040a7db.gif)
 
 
-***Adaptive time step with x/4 as the tolerance***
+# ***Adaptive time step with x/4 as the tolerance***
 
 As we can see reducing the tolerance by a factor of 4 makes almost no difference to the output but increases computation time by a factor of 4, therefore finding the 'sweet spot' is needed to maximise computation time.
 

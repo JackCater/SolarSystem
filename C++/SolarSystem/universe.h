@@ -33,7 +33,7 @@ private:
 	/// <param name="dt">The time step</param>
 	/// <param name="pos_vel_vec">The std::vector containing the position and velocity parameters</param>
 	/// <returns>The error code, see error.h for more</returns>
-	int check_step(universe* universe, double err, double tol, double& dt, std::vector<pos_vel_params> pos_vel_vec);
+	int check_step(double err, double tol, double& dt, std::vector<pos_vel_params> pos_vel_vec);
 
 public:
 	/*********************************************************
@@ -94,10 +94,9 @@ public:
 	/// Computes the next step in the simulation using the Euler method
 	/// for all planets in the universe with all bodies acting as a force
 	/// </summary>
-	/// <param name="u">The universe</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_euler(universe* u, double dt);
+	int step_euler(double dt);
 	
 	/// <summary>
 	/// Computes the next step of the simulation using the Runge Kutta fourth order method
@@ -112,10 +111,9 @@ public:
 	/// Computes the next step in the simulation using the Runge Kutta fourth order method
 	/// for all planets in the universe with all bodies acting as a force
 	/// </summary>
-	/// <param name="u">The universe</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rk4(universe* u, double dt);
+	int step_rk4(double dt);
 	  
 	/// <summary>
 	/// Computes the next step of the simulation using the Runge Kutta Fehlberg fourth order method
@@ -130,10 +128,9 @@ public:
 	/// Computes the next step in the simulation using the Runge Kutta Fehlberg fourth order method
 	/// for all planets in the universe with all bodies acting as a force
 	/// </summary>
-	/// <param name="u">The universe</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rkf4(universe* u, double dt);
+	int step_rkf4(double dt);
 	/// <summary>
 	/// Computes the next step of the simulation using the Runge Kutta Fehlberg fifth order method
 	/// for all planets in the universe but with only ONE body being the acting force
@@ -147,13 +144,12 @@ public:
 	/// Computes the next step in the simulation using the Runge Kutta Fehlberg fifth order method
 	/// for all planets in the universe with all bodies acting as a force
 	/// </summary>
-	/// <param name="u">The universe</param>
 	/// <param name="dt">The time step</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rkf5(universe* u, double dt);
+	int step_rkf5(double dt);
 	  
 	/// <summary>
-	/// Computes the next step of the simulation using the Runge Kutta Fehlberg fifth order method
+	/// Computes the next step of the simulation using the Runge Kutta Fehlberg fifth order method with an adaptive time step
 	/// for all planets in the universe but with only ONE body being the acting force
 	/// </summary>
 	/// <param name="acting_force">The body being the acting force, usually a star</param>
@@ -162,13 +158,12 @@ public:
 	int step_rkf45(body* acting_force, double tol, double& dt);
 
 	/// <summary>
-	/// Computes the next step in the simulation using the Runge Kutta Fehlberg fifth order method
+	/// Computes the next step in the simulation using the Runge Kutta Fehlberg fifth order method with an adaptive time step
 	/// for all planets in the universe with all bodies acting as a force
 	/// </summary>
-	/// <param name="u">The universe</param>
 	/// <param name="dt">The time step, for the adaptive method this needs to be passed by reference</param>
 	/// <returns>The error code. See error.h for more info</returns>
-	int step_rkf45(universe* u, double tol, double& dt);
+	int step_rkf45(double tol, double& dt);
 }; // end class universe
 
 /// <summary>
@@ -179,38 +174,44 @@ public:
 class data_collection
 {
 private:
-	int _number_of_steps; // Number of steps to compute
-	double _final_time; // Final time
+	const int _max_number_of_steps; // Number of steps to compute
+	int _step_number; // The current step number
+	const double _final_time; // Final time
 	double _dt; // Time step
 	double _time; // Current time
 
 public:
 	/// <summary>
 	/// Default constructor
-	/// Number of steps = 1000
-	/// Final time = 1
-	/// dt = number of steps / final time
-	/// time = 0 (intially)
+	/// Number of steps = 1000,
+	/// Final time = 1 year (86400 * 365 seconds),
+	/// dt = 1 day (86400s),
+	/// time = 0 (intially),
 	/// </summary>
-	data_collection() : _number_of_steps(1000), _final_time(1.0), _dt(_final_time / (double)_number_of_steps), _time(0.0) {}
+	data_collection() : _max_number_of_steps(1000), _step_number(0), _final_time(86400.0 * 365.0), _dt(86400.0), _time(0.0) {}
 
 	/// <summary>
 	/// Modified constructor
-	/// dt = number of steps / final time
 	/// time = 0 (initially)
 	/// </summary>
 	/// <param name="number_of_steps">The number of steps to compute</param>
 	/// <param name="final_time">The time to stop the computation</param>
-	data_collection(int number_of_steps, double final_time) : _number_of_steps(number_of_steps), _final_time(final_time), _dt(final_time / (double)number_of_steps), _time(0.0) {}
+	/// <param name="dt">The time step</param>
+	data_collection(int number_of_steps, double final_time, double dt) : _max_number_of_steps(number_of_steps), _step_number(0), _final_time(final_time), _dt(dt), _time(0.0) {}
 
 	// Getters
-	double number_of_steps() const{ return _number_of_steps; } // Get number of steps
+	int number_of_steps() const{ return _max_number_of_steps; } // Get number of steps
+	int step_number() const { return _step_number; } // Get current step number
 	double final_time() const { return _final_time; } // Get final time
-	double dt() const { return _dt; } // Get time step
+	double get_dt() const { return _dt; } // Get time step
 	double time() const { return _time; } // Get time
 
 	// Setters
+	void step_number(int step_no) { _step_number = std::move(step_no); } // Set step number
+	void set_dt(double dt) { _dt = std::move(dt); } // Set time step
 	void time(double time) { _time = std::move(time); } // Set time
+
+	__declspec(property(get = get_dt, put = set_dt)) double dt;		// dt
 }; // end class data_collection
 
 #endif // UNIVERSE_H

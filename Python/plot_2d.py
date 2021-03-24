@@ -7,21 +7,21 @@ from matplotlib import animation
 colour_list = ('red', 'orange', 'blue', 'lawngreen', 'aqua', 'purple', 'fuchsia', 'lightblue', 'chocolate',
                'khaki')  # Add more colours if you want too
 
-
 class plot_traj:
     def __init__(self, filename, xlim=0, ylim=0, tail=True, labels=True, show_anim=True,
-                 axes=True, axes_text=True, save=False):
+                 axes=True, axes_text=True, save=False, skip_frames=1):
         # define variables
         self.names, self.masses, self.radii = [], [], []
         self.number_of_bodies, self.number_of_steps = 0, 0
         self.fig = plt.figure()
         self.ax = plt.axes()
-        self.time_text = self.ax.text(0.5,0.5,'', verticalalignment='bottom', horizontalalignment='right')
+        self.time_text = self.ax.text(0.5,0.9, "", transform=self.ax.transAxes, ha="center")
         self.data_list, self.line_list, self.data, self.time_list, = [], [], [], []
         # The keywords arguments are handled below
         self.xlim, self.ylim = xlim, ylim
         self.tail, self.labels, self.show_anim, self.axes = tail, labels, show_anim, axes
         self.axes_text, self.save = axes_text, save
+        self.skip_frames = skip_frames
 
         # Open file
         self.filename = filename
@@ -98,23 +98,23 @@ class plot_traj:
 
             # X LIMITS
             if min(min_array_x) < -self.xlim and max(max_array_x) > self.xlim:
-                plt.xlim(-self.xlim, self.xlim)
+                self.ax.set_xlim(-self.xlim, self.xlim)
             elif min(min_array_x) < -self.xlim:
-                plt.xlim(-self.xlim, max(max_array_x))
+                self.ax.set_xlim(-self.xlim, max(max_array_x))
             elif max(max_array_x) > self.xlim:
-                plt.xlim(min(min_array_x), self.xlim)
+                self.ax.set_xlim(min(min_array_x), self.xlim)
             else:
-                plt.xlim(min(min_array_x), max(max_array_x))
+                self.ax.set_xlim(min(min_array_x), max(max_array_x))
 
             # Y LIMITS
             if min(min_array_y) < -self.ylim and max(max_array_y) > self.ylim:
-                plt.ylim(-self.ylim, self.ylim)
+                self.ax.set_ylim(-self.ylim, self.ylim)
             elif min(min_array_y) < -self.ylim:
-                plt.ylim(-self.ylim, max(max_array_y))
+                self.ax.set_ylim(-self.ylim, max(max_array_y))
             elif max(max_array_x) > self.ylim:
-                plt.ylim(min(min_array_y), self.ylim)
+                self.ax.set_ylim(min(min_array_y), self.ylim)
             else:
-                plt.ylim(min(min_array_y), max(max_array_y))
+                self.ax.set_ylim(min(min_array_y), max(max_array_y))
 
         # Create body and line object for each planet/star
         for bodies in range(len(self.names)):
@@ -143,15 +143,17 @@ class plot_traj:
 
     def _update(self, frame):
         self.frame = frame
-        for x in range(len(self.data_list)):
-            # Set sphere to be planet
-            self.data_list[x].set_data(self.df.at[self.frame, self.names[x] + 'x'],
-                                          self.df.at[self.frame, self.names[x] + 'y'])
-            # set data for bodies tails
-            self.line_list[x].set_data(self.df.loc[0:self.frame, self.names[x] + 'x'],
-                                          self.df.loc[0:self.frame, self.names[x] + 'y'])
 
-        self.time_text.set_text(self.time_list[self.frame])
+        if self.frame % self.skip_frames == 0:
+            for x in range(len(self.data_list)):
+                # Set sphere to be planet
+                self.data_list[x].set_data(self.df.at[self.frame, self.names[x] + 'x'],
+                                              self.df.at[self.frame, self.names[x] + 'y'])
+                # set data for bodies tails
+                self.line_list[x].set_data(self.df.loc[0:self.frame, self.names[x] + 'x'],
+                                              self.df.loc[0:self.frame, self.names[x] + 'y'])
+
+            self.time_text.set_text(str(round(self.time_list[self.frame], 2)) + " days")
         return self.line_list + self.data_list + [self.time_text]
 
     def animate(self, f):
@@ -160,8 +162,12 @@ class plot_traj:
         if self.show_anim:
             plt.show()
         if self.save:
-            anim.save(f, writer='PillowWriter', fps=60)
+            writergif = animation.PillowWriter(fps=200)
+            anim.save(f, writer=writergif)
 
 if __name__ == "__main__":
-    planets = plot_traj("Test2.csv", show_anim=True, save=False)
-    plot_traj.animate(planets, r"C://Users/Jcater/source/repos/SolarSystem/Python/test4.gif")
+    planets2 = plot_traj("rkf45_tol_10000_step_5_years.csv", show_anim=False, save=True, skip_frames=5)
+    plot_traj.animate(planets2, r"C://Users/Jcater/source/repos/SolarSystem/Python/gifs/rkf45_5_years_4.gif")
+    print("rkf45 1 converted...")
+
+

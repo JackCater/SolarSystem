@@ -47,5 +47,8 @@
     <ClInclude Include="error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="create_universe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

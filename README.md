@@ -42,7 +42,7 @@ However the same step size using the Euler method (a lower order numerical metho
 
 
 In the following examples we use the Runge Kutta Fehlberg 5th order with adaptive time step. With these examples, the time step is dependant on the calculation error.
-This method computes the variables for the 5th order method, but calculates the positions and velocities for a 4th and 5th order method, the difference in these values is the error. If this error is within the tolerance the steps can be computed, if not the step is ignored and the time step is halved. If the time step is well within the error then the time step is doubled. This method utilises computation time. Please note for the ease of viewing the same number of frames are plotted in the animation but the number of steps are different.
+This method computes the variables for the 5th order method, but calculates the positions and velocities for a 4th and 5th order method, the difference in these values is the error. If this error is within the tolerance the steps can be computed, if not the step is ignored and the time step is halved. If the time step is well within the error then the time step is doubled. This method utilises computation time. Please note for the ease of viewing the same number of frames are plotted in the animation but the number of steps that were computed are different.
 
 ***Adpative time step with x as the tolerance***
 

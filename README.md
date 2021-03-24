@@ -17,14 +17,17 @@ Some examples are seen below, which highlights the importance of a good numerica
 
 ***RK4 method with 1/2 Earth day step size.***
 Whilst the RK4 method is good, the step size is far too large
+
 ![rk4_half_day_step](https://user-images.githubusercontent.com/76100438/112312856-2b5aed00-8c9f-11eb-96b0-61968aaff2fc.gif)
 
 
 ***RK4 method with 1/10 Earth day step size.***
 We see lowering the step size produces a more realistic approximation, although a smaller time step will be needed for higher precision
+
 ![rk4_10_day_step_3](https://user-images.githubusercontent.com/76100438/112336099-ada1dc00-8cb4-11eb-89a0-d93bfe568c58.gif)
 
 ***Euler method with 1/10 Earth day step size.***
 However the same step size using the Euler method (a lower order numerical method) produces less realistic approximations
+
 ![euler_10_day_step](https://user-images.githubusercontent.com/76100438/112336122-b5618080-8cb4-11eb-8a77-b43a63399520.gif)
 

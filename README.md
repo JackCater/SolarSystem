@@ -63,4 +63,9 @@ For good measure, here's 5 years with the adaptive time step. (Notice no Precess
 
 ![rkf45_5_years_3](https://user-images.githubusercontent.com/76100438/112344708-47b95280-8cbc-11eb-9024-9661b2981fc8.gif)
 
+***SPED UP***
+
+![rkf45_5_years_4](https://user-images.githubusercontent.com/76100438/112346136-91ef0380-8cbd-11eb-8be6-96eefe00978d.gif)
+
+
 

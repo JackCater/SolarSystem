@@ -350,6 +350,24 @@ int body::update_params(pos_vel_params params) {
 	return NO_ERROR;
 } // end update_params
 
+int body::check_step(double err, double tol, double& dt, pos_vel_params p)
+{
+	if (err > tol) { // Reject the step
+		dt /= 2;
+		return NO_ERROR;
+	} // end if
+	else { // Accept the step
+		this->update_params(p);
+		if (err * 2 < tol) { // If error is much smaller than tol
+							 // We can increase the time step
+			dt *= 2;
+			return NO_ERROR;
+		} // end if
+	} // end else
+
+	return NO_ERROR;
+} // end check_step
+
 int body::step_euler(body* acting_force, double dt) {
 	// If the body object is null return error
 	if (acting_force == nullptr) return ERR_BODY_NULLPTR;
@@ -400,9 +418,9 @@ int body::step_euler(universe* u, double dt) {
 	this->x += this->vx * dt;
 	this->y += this->vy * dt;
 	this->z += this->vz * dt;
-	this->vx -= ax * dt;
-	this->vy -= ay * dt;
-	this->vz -= az * dt;
+	this->vx += ax * dt;
+	this->vy += ay * dt;
+	this->vz += az * dt;
 
 	// Check for errors
 	retval = error_check(u);
@@ -657,6 +675,20 @@ int body::step_rkf5(universe* u, double dt) {
 	if (retval != NO_ERROR) return retval;
 	return NO_ERROR;
 } // end step_rkf5
+
+int body::step_rkf45(body* acting_force, double tol, double& err, double& dt, pos_vel_params& p) {
+	// Init retval
+	int retval = NO_ERROR;
+	if (this != acting_force) {
+		retval = step_adaptive_method(acting_force, err, dt, p);
+		if (retval != NO_ERROR) return retval;
+	} // end if
+
+	retval = error_check(acting_force);
+	if (retval != NO_ERROR) return retval;
+
+	return NO_ERROR;
+} // end step_rkf45
 
 int body::step_rkf45(body* acting_force, double tol, double& dt) {
 	// Init retval

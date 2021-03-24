@@ -16,6 +16,7 @@ Some examples are seen below, which highlights the importance of a good numerica
 
 **For visual ease these methods are only showing the planets in the inner Solar System.**
 
+
 ***RK4 method with 1/2 Earth day step size.***
 
 Whilst the RK4 method is good, the step size is far too large
@@ -28,6 +29,7 @@ Whilst the RK4 method is good, the step size is far too large
 We see lowering the step size produces a more realistic approximation, although a smaller time step will be needed for higher precision
 
 ![rk4_10_day_step_3](https://user-images.githubusercontent.com/76100438/112336099-ada1dc00-8cb4-11eb-89a0-d93bfe568c58.gif)
+
 
 ***Euler method with 1/10 Earth day step size.***
 

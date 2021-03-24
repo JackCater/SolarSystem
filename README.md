@@ -3,6 +3,8 @@
 This repository simulates Planetary Motion using Newton's Laws of gravity.
 In the C++ folder is the code to compute the simulation whereas the Python folder is where the code to animate the trajectories is.
 
+All information is gathered from NASA.gov
+
 There are many methods implemented in the C++ Project. These are defined in body.h:
 * Euler Metod
 * Runge Kutta 4th order
@@ -48,6 +50,8 @@ This method computes the variables for the 5th order method, but calculates the 
 
 
 ***Adaptive time step with x/4 as the tolerance***
+
+As we can see reducing the tolerance by a factor of 4 makes almost no difference to the output but increases computation time by a factor of 4, therefore finding the 'sweet spot' is needed to maximise computation time.
 
 ![rkf45_10000_tol](https://user-images.githubusercontent.com/76100438/112339877-f6a75f80-8cb7-11eb-9b32-a7ab1953f48c.gif)
 

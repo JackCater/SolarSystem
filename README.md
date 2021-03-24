@@ -13,7 +13,8 @@ There are many methods implemented in the C++ Project. These are defined in body
 Within the project there are different methods; one which computes the force felt on the planets in the 'Universe' by one acting force, typically the sun, and once which computes the force felt on the planets in the 'Universe' by all other planets in the 'Universe'.
 
 Some examples are seen below, which highlights the importance of a good numerical method and a suitable step size:
-**For visual ease these methods are only showing the planets in the inner Solar System.*
+
+**For visual ease these methods are only showing the planets in the inner Solar System.**
 
 ***RK4 method with 1/2 Earth day step size.***
 

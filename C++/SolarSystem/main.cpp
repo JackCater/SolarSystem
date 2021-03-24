@@ -43,13 +43,12 @@ int main(int argc, char* argv[]) {
     //const char* outfilename = "Universe_Test.csv";
     file_.open(outfilename);
 
-    data_collection data(20000, 86400.0 * 365.0, 86400.0);
     double time = 0.0;
     double dt = 86400.0 / 10.0;
-    double final_time = 86400.0 * 366.0;
+    double final_time = 86400.0 * 366.0 * 5.0;
     int step_number = 0, written_steps = 0;
     int number_of_steps = 1000000;
-    double tol = 10000;
+    double tol = 50000;
 
     universe u = create_solar_system();
     output_preamble(u, file_);
@@ -57,13 +56,13 @@ int main(int argc, char* argv[]) {
     while ((time < final_time) && (step_number <= number_of_steps)) {
         int retval = NO_ERROR;
         std::cerr << "\rTime remaining: " << final_time - time- dt << ' ' << "Step no: " << step_number << "    " << std::flush;
-        retval = u.step_euler(dt);
+        retval = u.step_rkf45(tol, dt);
         if (retval != NO_ERROR) { 
             std::cerr << "\nERROR: " << retval << " See error.h for more\n";
             return retval; 
         } // end if
 
-        if (step_number % 10 == 0) {
+        if (step_number % 25 == 0) {
             output_no_whitespace(time / 86400.0, u, file_, ",");
             written_steps++;
         }

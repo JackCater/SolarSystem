@@ -8,7 +8,7 @@ colour_list = ('red', 'orange', 'blue', 'lawngreen', 'aqua', 'purple', 'fuchsia'
                'khaki')  # Add more colours if you want too
 
 class plot_traj:
-    def __init__(self, filename, xlim=0, ylim=0, tail=True, labels=True, show_anim=True,
+    def __init__(self, filename, xlim=0.0, ylim=0.0, tail=True, labels=True, show_anim=True,
                  axes=True, axes_text=True, save=False, skip_frames=1):
         # define variables
         self.names, self.masses, self.radii = [], [], []
@@ -166,8 +166,8 @@ class plot_traj:
             anim.save(f, writer=writergif)
 
 if __name__ == "__main__":
-    planets2 = plot_traj("rkf45_tol_10000_step_5_years.csv", show_anim=False, save=True, skip_frames=5)
-    plot_traj.animate(planets2, r"C://Users/Jcater/source/repos/SolarSystem/Python/gifs/rkf45_5_years_4.gif")
+    planets2 = plot_traj("rkf45_whole_solar_system.csv", show_anim=True, save=True, skip_frames=5, xlim=3E12)
+    plot_traj.animate(planets2, r"C://Users/Jcater/source/repos/SolarSystem/Python/gifs/rkf45_whole_solar_system.gif")
     print("rkf45 1 converted...")
 
 

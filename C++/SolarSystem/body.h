@@ -13,7 +13,6 @@
 #include "utility.h"
 #include "error.h"
 
-// Forward decleration of universe class
 class universe;
 
 #pragma region data structs
@@ -41,6 +40,24 @@ struct pos_vel_params {
 /// A class containing methods and functions for a body in space
 /// </summary>
 class body {
+#pragma region friend declerations
+	/*********************************************************
+	Friend classes and functions -
+	Because the body class has a lot of member variables and
+	private and protected functions that universe will need
+	to access we make these friends.
+	The output functions need to be friends too to access the
+	member variables for each body.
+	*********************************************************/
+	friend class universe;
+	friend void output_preamble(universe u, std::ostream& ofile); 
+	friend void output(double step_number, universe u, std::ofstream& ofile);
+	friend void output(double step_number, universe u, std::ofstream& ofile, const char* seperator);
+	friend void output_no_whitespace(double step_number, universe u, std::ofstream& ofile, const char* seperator);
+	friend void output(double step_number, body b, std::ofstream& ofile);
+	friend void output(double step_number, body b, std::ofstream& ofile, const char* seperator);
+#pragma endregion
+
 private:
 #pragma region member variables
 	/*********************************************************
@@ -53,6 +70,37 @@ private:
 	vel3 _velocity;				// Velocity of star/planet (vx, vy, vz)
 	bool _include;				// Flag to determine whether the body should be included in the simulation
 								// By default this is true
+#pragma endregion
+		
+protected:
+#pragma region getters and setters
+	/*********************************************************
+	Getters
+	*********************************************************/
+	std::string get_name()	const { return _name; } // Get name of body
+	double	get_x()			const { return _centre.x(); } // Get X pos
+	double	get_y()			const { return _centre.y(); } // Get Y pos
+	double	get_z()			const { return _centre.z(); } // Get Z pos
+	point3	get_pos()		const { return _centre; } // Get position
+	double	get_vx()		const { return _velocity.x(); } // Get X vel
+	double	get_vy()		const { return _velocity.y(); } // Get Y vel
+	double	get_vz()		const { return _velocity.z(); } // Get Z vel
+	vel3	get_vel()		const { return _velocity; } // Get velocity
+	double	get_radius()	const { return _radius; } // Get radius
+	double	get_mass()		const { return _mass; } // Get mass
+	bool	get_inlude()	const { return _include; } // Get include flag
+
+	/*********************************************************
+	Setters
+	*********************************************************/
+	void set_x(double x) { _centre[0] = std::move(x); } // Set X pos
+	void set_y(double y) { _centre[1] = std::move(y); } // Set Y pos
+	void set_z(double z) { _centre[2] = std::move(z); } // Set Z pos
+	void set_pos(point3 position) { _centre = std::move(position); } // Set Position
+	void set_vx(double vx) { _velocity[0] = std::move(vx); } // Set X vel
+	void set_vy(double vy) { _velocity[1] = std::move(vy); } // Set Y vel
+	void set_vz(double vz) { _velocity[2] = std::move(vz); } // Set Z vel
+	void set_vel(vel3 vel) { _velocity = std::move(vel); } // Set velocity
 #pragma endregion
 
 #pragma region private functions
@@ -122,10 +170,27 @@ private:
 	int step_adaptive_method(universe* universe, double& error, double dt, pos_vel_params& params);
 
 	/// <summary>
+	/// Updates the velocity and position parameters of the object
+	/// </summary>
+	/// <param name="params">The position and velocity parameter struct</param>
+	/// <returns>The error code, see error.h for more</returns>
+	int update_params(pos_vel_params params);
+
+	/// <summary>
 	/// Sets the member variables of a body to 0
 	/// Used when two bodies collide
 	/// </summary>
 	void set_to_zero();
+
+	/// <summary>
+	/// Checks whether the error is small enough to compute the next step
+	/// </summary>
+	/// <param name="error">The error value</param>
+	/// <param name="tolerance">The error tolerance</param>
+	/// <param name="dt">The time step</param>
+	/// <param name="params">The position velocity parameters</param>
+	/// <returns>The error code, see error.h for mmre</returns>
+	int check_step(double error, double tolerance, double& dt, pos_vel_params params);
 #pragma endregion
 
 public:
@@ -154,35 +219,7 @@ public:
 	~body() {}; // Destructor
 #pragma endregion
 
-#pragma region getters, setters and properties
-	/*********************************************************
-	Getters
-	*********************************************************/
-	std::string get_name()	const { return _name; } // Get name of body
-	double	get_x()			const { return _centre.x(); } // Get X pos
-	double	get_y()			const { return _centre.y(); } // Get Y pos
-	double	get_z()			const { return _centre.z(); } // Get Z pos
-	point3	get_pos()		const { return _centre; } // Get position
-	double	get_vx()		const { return _velocity.x(); } // Get X vel
-	double	get_vy()		const { return _velocity.y(); } // Get Y vel
-	double	get_vz()		const { return _velocity.z(); } // Get Z vel
-	vel3	get_vel()		const { return _velocity; } // Get velocity
-	double	get_radius()	const { return _radius; } // Get radius
-	double	get_mass()		const { return _mass; } // Get mass
-	bool	get_inlude()	const { return _include; } // Get include flag
-
-	/*********************************************************
-	Setters
-	*********************************************************/
-	void set_x(double x) { _centre[0] = std::move(x); } // Set X pos
-	void set_y(double y) { _centre[1] = std::move(y); } // Set Y pos
-	void set_z(double z) { _centre[2] = std::move(z); } // Set Z pos
-	void set_pos(point3 position) { _centre = std::move(position); } // Set Position
-	void set_vx(double vx) { _velocity[0] = std::move(vx); } // Set X vel
-	void set_vy(double vy) { _velocity[1] = std::move(vy); } // Set Y vel
-	void set_vz(double vz) { _velocity[2] = std::move(vz); } // Set Z vel
-	void set_vel(vel3 vel) { _velocity = std::move(vel); } // Set velocity
-														   
+#pragma region properties														   
 	/*********************************************************
 	Property definitions (For C# style properties)
 	*********************************************************/
@@ -204,23 +241,6 @@ public:
 	/*********************************************************
 	Numerical methods - functions defined in body.cpp!!
 	*********************************************************/
-	/// <summary>
-	/// Updates the velocity and position parameters of the object
-	/// </summary>
-	/// <param name="params">The position and velocity parameter struct</param>
-	/// <returns>The error code, see error.h for more</returns>
-	int update_params(pos_vel_params params);
-
-	/// <summary>
-	/// Checks whether the error is small enough to compute the next step
-	/// </summary>
-	/// <param name="error">The error value</param>
-	/// <param name="tolerance">The error tolerance</param>
-	/// <param name="dt">The time step</param>
-	/// <param name="params">The position velocity parameters</param>
-	/// <returns>The error code, see error.h for mmre</returns>
-	int check_step(double error, double tolerance, double& dt, pos_vel_params params);
-
 	/// <summary>
 	/// Computes one step using the Euler method
 	/// NOTE: This method only uses ONE body in the computation

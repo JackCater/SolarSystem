@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import animation
 
-colour_list = ('red', 'orange', 'blue', 'lawngreen', 'aqua', 'purple', 'fuchsia', 'lightblue', 'chocolate',
+colour_list = ('red', 'orange', 'blue', 'lawngreen', 'aqua', 'purple', 'chocolate', 'lightblue', 'fuchsia',
                'khaki')  # Add more colours if you want too
 
 class plot_traj:
@@ -153,7 +153,8 @@ class plot_traj:
                 self.line_list[x].set_data(self.df.loc[0:self.frame, self.names[x] + 'x'],
                                               self.df.loc[0:self.frame, self.names[x] + 'y'])
 
-            self.time_text.set_text(str(round(self.time_list[self.frame], 2)) + " days")
+            self.time_text.set_text(str(round(self.time_list[self.frame] / 365.0, 2)) + " years ("
+                                    + str(round(self.time_list[self.frame], 2)) + " days)")
         return self.line_list + self.data_list + [self.time_text]
 
     def animate(self, f):
@@ -166,8 +167,8 @@ class plot_traj:
             anim.save(f, writer=writergif)
 
 if __name__ == "__main__":
-    planets2 = plot_traj("rkf45_whole_solar_system.csv", show_anim=True, save=True, skip_frames=5, xlim=3E12)
-    plot_traj.animate(planets2, r"C://Users/Jcater/source/repos/SolarSystem/Python/gifs/rkf45_whole_solar_system.gif")
+    planets2 = plot_traj("rkf45_three_body.csv", show_anim=True, save=False, skip_frames=1)
+    plot_traj.animate(planets2, r"C://Users/Jcater/source/repos/SolarSystem/Python/gifs/rkf45_whole_solar_system_0.25_tol.gif")
     print("rkf45 1 converted...")
 
 

@@ -16,6 +16,11 @@ body uranus("Uranus", vec_d_au_to_meters(uranus_x_pos_au, uranus_y_pos_au, uranu
 body neptune("Neptune", vec_d_au_to_meters(neptune_x_pos_au, neptune_y_pos_au, neptune_z_pos_au), neptune_radius, neptune_mass, vec_v_au_to_meters(neptune_x_vel_au, neptune_y_vel_au, neptune_z_vel_au));
 body pluto("Pluto", vec_d_au_to_meters(pluto_x_pos_au, pluto_y_pos_au, pluto_z_pos_au), pluto_radius, pluto_mass, vec_v_au_to_meters(pluto_x_vel_au, pluto_y_vel_au, pluto_z_vel_au));
 
+// Three body problem solution
+body x0("Body1", point3(-0.970, 0.243, 0.0), 0.1, 1.0, vel3(-0.466, -0.433, 0.0));
+body x1("Body2", point3(0.970, -0.243, 0.0), 0.1, 1.0, vel3(-0.466, -0.433, 0.0));
+body x2("Body3", point3(0.0, 0.0, 0.0), 0.1, 1.0, vel3(2.0 * 0.466, 2.0 * 0.433, 0.0));
+
 universe create_solar_system(void) {
     // Create universe
     universe u;
@@ -31,5 +36,34 @@ universe create_solar_system(void) {
     u.add(&pluto);
     return u;
 } // end create_solar_system
+
+universe create_inner_solar_system(void) {
+    universe u;
+    u.add(&sun);
+    u.add(&mercury);
+    u.add(&venus);
+    u.add(&earth);
+    u.add(&moon);
+    u.add(&mars);
+    return u;
+} // end create_inner_solar_system
+
+universe create_inner_solar_system_no_moon(void) {
+    universe u;
+    u.add(&sun);
+    u.add(&mercury);
+    u.add(&venus);
+    u.add(&earth);
+    u.add(&mars);
+    return u;
+} // end create_inner_solar_system_no_moon
+
+universe create_three_body(void) {
+    universe u;
+    u.add(&x0);
+    u.add(&x1);
+    u.add(&x2);
+    return u;
+} // end create_three_body
 
 #endif // CREATE_UNIVERSE_H

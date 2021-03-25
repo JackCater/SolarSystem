@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 *.csv
+/Python/gifs/rkf45_whole_solar_system_0.25_tol.gif

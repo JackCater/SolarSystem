@@ -28,7 +28,7 @@ const double lightyear = 9460730472580800.0; // light year in m
 const double parsec = 96939420213600000.0; // Parsec in m
 const double speed_of_light = 299792458.0; // speed of light in m/s
 const double c = 299792458.0; // speed of light in m/s
-const double grav_constant = 6.67430E-11; // Gravitational constant in N (m/kg)^2
+const double grav_constant = 1; // 6.67430E-11; // Gravitational constant in N (m/kg)^2
 
 // Planets information all data on mass and radii from nssdc.gsfc.nasa.gov
 // All data on position and velocity taken from jpl.nasa.gov on the 23rd March 2021
@@ -82,7 +82,7 @@ const double moon_mass = 0.07346E24; // Moon mass in kg
 const double moon_radius = 1737.4E3; // Moon radius in m
 const double moon_radius_au = d_meters_to_au(moon_radius); // Moon radius in au
 const double moon_x_pos_au = -1.003814404464745E+00; // X-component of position vector (au)
-const double moon_y_pos_au = 3.188956686612084E-02; // Y-component of position vector (au)
+const double moon_y_pos_au = -3.188956686612084E-02; // Y-component of position vector (au)
 const double moon_z_pos_au = 2.578958832688566E-04; // Z-component of position vector (au)
 const double moon_x_vel_au = -1.267296306713540E-04; // X-component of velocity vector (au/day)
 const double moon_y_vel_au = -1.747277319114132E-02; // Y-component of velocity vector (au/day)

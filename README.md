@@ -73,7 +73,7 @@ For good measure, here's 5 years with the adaptive time step. (Notice no Precess
 Here's the whole solar system with a very small tolerance on the error. The tolerance is small enough not to effect the outer planets but is large enough to effect the inner planets.
 
 
-![rkf45_whole_solar_system](https://user-images.githubusercontent.com/76100438/112665725-45d5c780-8e53-11eb-8f9e-73d09d22c901.gif)
+![rkf45_whole_solar_system_0 25_tol](https://user-images.githubusercontent.com/76100438/112666220-d8766680-8e53-11eb-986f-667881dafe1a.gif)
 
 
 

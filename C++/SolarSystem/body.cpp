@@ -16,11 +16,7 @@ int body::compute_acceleration(point3 pos, double& ax, double& ay, double& az) {
 	ax += f.x();
 	ay += f.y();
 	az += f.z();
-
-	//ax += (grav_constant * _mass * pos.x()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
-	//ay += (grav_constant * _mass * pos.y()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
-	//az += (grav_constant * _mass * pos.z()) / ((pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2)) * (sqrt(pow(pos.x(), 2) + pow(pos.y(), 2) + pow(pos.z(), 2))));
-
+	
 	// if the acceleration applied on a body is NaN return an error
 	if (ax != ax) return ERR_AX_NAN;
 	if (ay != ay) return ERR_AY_NAN;
@@ -327,19 +323,6 @@ int body::step_adaptive_method(universe* u, double& error, double dt, pos_vel_pa
 	return NO_ERROR;
 } // end step_adapative_method
 
-void body::set_to_zero() {
-	this->_mass = 0;
-	this->_radius = 0;
-	this->_velocity = vel3(0.0, 0.0, 0.0);
-	this->_include = false; // Body will no longer be included in computations
-	return;
-} // end set_to_zero
-#pragma endregion
-
-#pragma region public functions
-/*****************************************************************************************************
-PUBLIC FUNCTIONS
-*****************************************************************************************************/
 int body::update_params(pos_vel_params params) {
 	this->x += params.x;
 	this->y += params.y;
@@ -349,6 +332,14 @@ int body::update_params(pos_vel_params params) {
 	this->vz -= params.vz;
 	return NO_ERROR;
 } // end update_params
+
+void body::set_to_zero() {
+	this->_mass = 0;
+	this->_radius = 0;
+	this->_velocity = vel3(0.0, 0.0, 0.0);
+	this->_include = false; // Body will no longer be included in computations
+	return;
+} // end set_to_zero
 
 int body::check_step(double err, double tol, double& dt, pos_vel_params p)
 {
@@ -367,7 +358,12 @@ int body::check_step(double err, double tol, double& dt, pos_vel_params p)
 
 	return NO_ERROR;
 } // end check_step
+#pragma endregion
 
+#pragma region public functions
+/*****************************************************************************************************
+PUBLIC FUNCTIONS
+*****************************************************************************************************/
 int body::step_euler(body* acting_force, double dt) {
 	// If the body object is null return error
 	if (acting_force == nullptr) return ERR_BODY_NULLPTR;

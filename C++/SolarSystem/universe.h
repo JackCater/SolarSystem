@@ -210,7 +210,8 @@ public:
 	void step_number(int step_no) { _step_number = std::move(step_no); } // Set step number
 	void set_dt(double dt) { _dt = std::move(dt); } // Set time step
 	void time(double time) { _time = std::move(time); } // Set time
-
+	
+	// Property definition
 	__declspec(property(get = get_dt, put = set_dt)) double dt;		// dt
 }; // end class data_collection
 

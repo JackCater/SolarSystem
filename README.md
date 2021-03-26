@@ -37,7 +37,7 @@ We see lowering the step size produces a more realistic approximation, although 
 
 However the same step size using the Euler method (a lower order numerical method) produces less realistic approximations
 
-![euler_skip_days](https://user-images.githubusercontent.com/76100438/112338559-cc08d700-8cb6-11eb-8cba-ce5640c236e9.gif)
+![euler_new](https://user-images.githubusercontent.com/76100438/112665588-22ab1800-8e53-11eb-84be-5efbd9d2c48f.gif)
 
 
 
@@ -66,6 +66,15 @@ For good measure, here's 5 years with the adaptive time step. (Notice no Precess
 # ***SPED UP***
 
 ![rkf45_5_years_4](https://user-images.githubusercontent.com/76100438/112346136-91ef0380-8cbd-11eb-8be6-96eefe00978d.gif)
+
+
+# ***The Whole Solar System***
+
+Here's the whole solar system with a very small tolerance on the error. The tolerance is small enough not to effect the outer planets but is large enough to effect the inner planets.
+
+
+![rkf45_whole_solar_system](https://user-images.githubusercontent.com/76100438/112665725-45d5c780-8e53-11eb-8f9e-73d09d22c901.gif)
+
 
 
 

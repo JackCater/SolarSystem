@@ -14,6 +14,8 @@ There are many methods implemented in the C++ Project. These are defined in body
 
 Within the project there are different methods; one which computes the force felt on the planets in the 'Universe' by one acting force, typically the sun, and once which computes the force felt on the planets in the 'Universe' by all other planets in the 'Universe'.
 
+The Python folder contains two files, one for plotting 2D and one for plotting 3D, they both contain keyword arguments which can be used to control the rotation speed (in 3D) and the number of frames to save, amongst other arguments.
+
 Some examples are seen below, which highlights the importance of a good numerical method and a suitable step size:
 
 **For visual ease these methods are only showing the planets in the inner Solar System.**

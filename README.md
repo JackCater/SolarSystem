@@ -1,5 +1,7 @@
 # SolarSystem
 
+![test2](https://user-images.githubusercontent.com/76100438/113000968-3ebafc00-9168-11eb-9ee7-dfd12f6f0929.gif)
+
 This repository simulates Planetary Motion using Newton's Laws of gravity.
 In the C++ folder is the code to compute the simulation whereas the Python folder is where the code to animate the trajectories is.
 

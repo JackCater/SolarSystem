@@ -7,8 +7,7 @@ int universe::check_step(double err, double tol, double& dt, std::vector<pos_vel
 		return NO_ERROR;
 	} // end if
 	else { // Accept the step
-		for (auto i = 0; i < pos_vel_vec.size(); i++)
-		{
+		for (auto i = 0; i < pos_vel_vec.size(); i++) {
 			this->body_at(i)->update_params(pos_vel_vec.at(i)); // Update params
 		}
 		pos_vel_vec.clear();

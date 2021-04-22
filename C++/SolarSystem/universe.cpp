@@ -1,7 +1,6 @@
 #include "universe.h"
 
-int universe::check_step(double err, double tol, double& dt, std::vector<pos_vel_params> pos_vel_vec)
-{
+int universe::check_step(double err, double tol, double& dt, std::vector<pos_vel_params> pos_vel_vec) {
 	if (err > tol) { // Reject the step
 		dt /= 2;
 		pos_vel_vec.clear();

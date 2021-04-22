@@ -2,15 +2,15 @@
 
 int universe::check_step(double err, double tol, double& dt, std::vector<pos_vel_params> pos_vel_vec) {
 	if (err > tol) { // Reject the step
-		dt /= 2;
-		pos_vel_vec.clear();
+		dt /= 2; // Half the time step
+		pos_vel_vec.clear(); // Remove elements from array
 		return NO_ERROR;
 	} // end if
 	else { // Accept the step
 		for (auto i = 0; i < pos_vel_vec.size(); i++) {
 			this->body_at(i)->update_params(pos_vel_vec.at(i)); // Update params
 		}
-		pos_vel_vec.clear();
+		pos_vel_vec.clear(); // Remove elements from array
 
 		if (err * 2 < tol) { // If error is much smaller than tol
 							 // We can increase the time step
